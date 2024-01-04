@@ -1,0 +1,70 @@
+<%- include("partials/header.ejs") %>
+
+<h1>Check A Symbol</h1>
+
+<form id="myForm" method="post" action="/stockprice">
+  <label for="scoreInput">Symbol:</label>
+  <input type="text" id="scoreInput" name="symbol" placeholder="Enter a Symbol" required>
+
+  <label for="submit">Submit</label>
+  <input id="post" type="submit" value="Get Secrets">
+</form>
+
+<h2><%= symbol %></h2>
+ 
+<div class="response-area">
+  <% if (Array.isArray(content) && content.length > 0) { %>
+    <% content.forEach((price) => { %>
+      <div>
+        <label for="timestamp">Timestamp:</label>
+        <div id="timestamp">
+          <%= price.timestamp %>
+        </div>
+      </div>
+      <div>
+        <label for="openPrice">Open Price:</label>
+        <div id="openPrice">
+          <%= price.openPrice || 'N/A' %>
+        </div>
+      </div>
+      <div>
+        <label for="highPrice">High Price:</label>
+        <div id="highPrice">
+          <%= price.highPrice || 'N/A' %>
+        </div>
+      </div>
+      <div>
+        <label for="lowPrice">Low Price:</label>
+        <div id="lowPrice">
+          <%= price.lowPrice || 'N/A' %>
+        </div>
+      </div>
+      <div>
+        <label for="closePrice">Close Price:</label>
+        <div id="closePrice">
+          <%= price.closePrice || 'N/A' %>
+        </div>
+      </div>
+      <div>
+        <label for="volume">Volume:</label>
+        <div id="volume">
+          <%= price.volume || 'N/A' %>
+        </div>
+      </div>
+  
+      <hr>
+    <% }) %>
+  <% } else { %>
+    <% if (content && content === "Error!") { %>
+      <p>Error fetching stock price data for <%= symbol %>.</p>
+    <% } else { %>
+      <p>No stock price data available for <%= symbol %>.</p>
+    <% } %>
+  <% } %>
+  
+  
+  
+  </div>
+
+
+<%- include("partials/footer.ejs") %>
