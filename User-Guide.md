@@ -10,3 +10,11 @@ nodemon stockprice.js
 nodemon overview.js
 nodemon incomestatement.js
 
+create .env file with content your API key 
+in format of 
+API_KEY=CPGFCGIQPO21QD23DXMMU
+
+note: 
+CPGFCGIQPO21QD23DXMMU is a fake key
+replace CPGFCGIQPO21QD23DXMMU with your real API
+
