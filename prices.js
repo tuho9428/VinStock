@@ -29,7 +29,7 @@ async function fetchStockPrices(symbol, timeSeriesFunction) {
                   timeSeriesFunction === 'TIME_SERIES_MONTHLY' ? '1mo'  : undefined,
         apikey: process.env.API_KEY,
       },
-
+      
     };
 
     const response = await axios.get(API_URL + '/query', config);
@@ -67,6 +67,40 @@ async function fetchStockPrices(symbol, timeSeriesFunction) {
     throw new Error('Failed to fetch stock prices.');
   }
 }
+
+const ticketSearch = async (symbol, interval) => {
+  const config = {
+    params: {
+      function: 'TICKET_SEARCH', // Assuming 'TICKET_SEARCH' is the correct function for ticket search
+      symbol: symbol,
+      interval: interval,
+      apikey: process.env.API_KEY,
+    },
+  };
+
+  try {
+    const response = await axios.get(API_URL + '/query', config);
+    const data = response.data;
+
+    // Access and format the required information from the response data
+    const metaData = data['Meta Data'];
+    const ticketInfo = data['Ticket Info']; // Update this based on the actual structure of the API response
+
+    // Process ticket information as needed
+
+    return ticketInfo; // You may want to return relevant information based on your use case
+  } catch (error) {
+    console.error('Error in ticket search:', error);
+    throw error; // Handle the error as needed
+  }
+};
+
+// Example usage:
+const symbol = 'AAPL';
+const interval = '1d'; // You can adjust the interval based on your requirements
+const ticketInfo = await ticketSearch(symbol, interval);
+console.log('Ticket Information:', ticketInfo);
+
 
 app.get('/', (req, res) => {
   res.render('index.ejs');
