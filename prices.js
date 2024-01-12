@@ -23,9 +23,13 @@ async function fetchStockPrices(symbol, timeSeriesFunction) {
       params: {
         function: timeSeriesFunction,
         symbol: symbol,
-        interval: timeSeriesFunction === 'TIME_SERIES_INTRADAY' ? '5min' : undefined,
+        interval: timeSeriesFunction === 'TIME_SERIES_INTRADAY' ? '5min'  :
+                  timeSeriesFunction === 'TIME_SERIES_DAILY' ? '1d'  :
+                  timeSeriesFunction === 'TIME_SERIES_WEEKLY' ? '1wk'  :
+                  timeSeriesFunction === 'TIME_SERIES_MONTHLY' ? '1mo'  : undefined,
         apikey: process.env.API_KEY,
       },
+
     };
 
     const response = await axios.get(API_URL + '/query', config);
@@ -33,7 +37,10 @@ async function fetchStockPrices(symbol, timeSeriesFunction) {
 
     // Access and format the required information from the response data
     const metaData = data['Meta Data'];
-    const timeSeries = data[timeSeriesFunction === 'TIME_SERIES_INTRADAY' ? 'Time Series (5min)' : 'Time Series (Daily)'];
+    const timeSeries = data[timeSeriesFunction === 'TIME_SERIES_INTRADAY' ? 'Time Series (5min)' : 
+                            timeSeriesFunction === 'TIME_SERIES_DAILY' ? 'Time Series (Daily)' : 
+                            timeSeriesFunction === 'TIME_SERIES_WEEKLY' ? 'Weekly Time Series' : 
+                            timeSeriesFunction === 'TIME_SERIES_MONTHLY' ? 'Monthly Time Series' : undefined];
 
     // Construct the prices array to pass to the template
     const prices = [];
@@ -78,7 +85,11 @@ app.post('/prices', async (req, res) => {
       result = await fetchStockPrices(symbol, 'TIME_SERIES_DAILY');
     } else if (req.body.intradayPrice) {
       result = await fetchStockPrices(symbol, 'TIME_SERIES_INTRADAY');
-    }
+    } else if (req.body.weeklyPrice) {
+      result = await fetchStockPrices(symbol, 'TIME_SERIES_WEEKLY');
+    } else if (req.body.monthlyPrice) {
+      result = await fetchStockPrices(symbol, 'TIME_SERIES_MONTHLY');
+    } 
 
     res.render('prices.ejs', result);
   } catch (error) {
