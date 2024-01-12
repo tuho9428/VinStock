@@ -9,6 +9,8 @@ Run stockprice.js, overview.js, and incomestatement.js separately to test each o
 nodemon stockprice.js
 nodemon overview.js
 nodemon incomestatement.js
+nodemon prices.js
+nodemon dailyprice.js
 
 create .env file with content your API key 
 in format of 
