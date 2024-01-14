@@ -1,70 +1,34 @@
 <%- include("partials/header.ejs") %>
 
-<h1>Check A Symbol</h1>
+<h1>Dynamic Selection</h1>
 
-<form id="myForm" method="post" action="/dailyprice">
-  <label for="scoreInput">Symbol:</label>
-  <input type="text" id="scoreInput" name="symbol" placeholder="Enter a Symbol" required>
-
-  <label for="submit">Submit</label>
-  <input id="post" type="submit" value="Get price">
+<form action="/dailyprice" method="POST">
+  <input type="text" name="symbol" placeholder="Enter symbol">
+  <button type="submit">Search</button>
 </form>
 
-<h2><%= symbol %></h2>
- 
-<div class="response-area">
-  <% if (Array.isArray(content) && content.length > 0) { %>
-    <% content.forEach((price) => { %>
-      <div>
-        <label for="timestamp">Timestamp:</label>
-        <div id="timestamp">
-          <%= price.timestamp %>
-        </div>
-      </div>
-      <div>
-        <label for="openPrice">Open Price:</label>
-        <div id="openPrice">
-          <%= price.openPrice || 'N/A' %>
-        </div>
-      </div>
-      <div>
-        <label for="highPrice">High Price:</label>
-        <div id="highPrice">
-          <%= price.highPrice || 'N/A' %>
-        </div>
-      </div>
-      <div>
-        <label for="lowPrice">Low Price:</label>
-        <div id="lowPrice">
-          <%= price.lowPrice || 'N/A' %>
-        </div>
-      </div>
-      <div>
-        <label for="closePrice">Close Price:</label>
-        <div id="closePrice">
-          <%= price.closePrice || 'N/A' %>
-        </div>
-      </div>
-      <div>
-        <label for="volume">Volume:</label>
-        <div id="volume">
-          <%= price.volume || 'N/A' %>
-        </div>
-      </div>
-  
-      <hr>
-    <% }) %>
-  <% } else { %>
-    <% if (content && content === "Error!") { %>
-      <p>Error fetching stock price data for <%= symbol %>.</p>
-    <% } else { %>
-      <p>No stock price data available for <%= symbol %>.</p>
-    <% } %>
+<select id="symbolSelect">
+  <% if (content && content.length > 0) {
+        content.forEach(function(result) { %>
+          <option value="<%= result.symbol %>"><%= result.symbol %>-<%= result.name %></option>
+  <%   });
+     } else { %>
+          <option value="">No results found</option>
   <% } %>
-  
-  
-  
-  </div>
+</select>
 
+<script>
+  // Get a reference to the select element
+  const symbolSelect = document.getElementById('symbolSelect');
+
+  // Add an event listener to the select element
+  symbolSelect.addEventListener('change', function() {
+    const selectedSymbol = symbolSelect.value;
+
+    // Perform actions based on the selected symbol
+    // For example, you can make another API call to retrieve more information about the selected symbol
+    console.log('Selected Symbol:', selectedSymbol);
+  });
+</script>
 
 <%- include("partials/footer.ejs") %>

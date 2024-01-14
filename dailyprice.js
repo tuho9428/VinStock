@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
- 
 dotenv.config();
 import express from "express";
 import bodyParser from "body-parser";
@@ -21,55 +20,39 @@ app.get("/", (req, res) => {
 });
 
 app.get("/dailyprice", (req, res) => {
-  res.render("dailyprice.ejs", { content: "" , symbol: ""});
+  res.render("dailyprice.ejs", { content: "", symbol: "" });
 });
 
 app.post("/dailyprice", async (req, res) => {
   let symbol = req.body.symbol;
 
-  try {
-    let config = {
-      params: {
-        function: "TIME_SERIES_DAILY",
-        symbol: symbol,
-        apikey: process.env.API_KEY,
-      },
-    };
+  const config = {
+    params: {
+      function: 'SYMBOL_SEARCH',
+      keywords: symbol,
+      apikey: process.env.API_KEY,
+    },
+  };
 
-    const response = await axios.get(API_URL + "/query", config);
+  try {
+    const response = await axios.get(API_URL + '/query', config);
     const data = response.data;
 
-    // Access and format the required information from the response data
-    const metaData = data["Meta Data"];
-    const timeSeries = data["Time Series (Daily)"];
+    const bestMatches = data['bestMatches'];
 
-    // Construct the prices array to pass to the template
-    const prices = [];
-    const stockSymbol = symbol;
+    const results = bestMatches.map(match => {
+      return {
+        symbol: match['1. symbol'],
+        name: match['2. name']
+      };
+    });
 
-    for (const timestamp in timeSeries) {
-      if (timeSeries.hasOwnProperty(timestamp)) {
-        const entry = timeSeries[timestamp];
-        const price = {
-          timestamp: timestamp,
-          openPrice: entry["1. open"],
-          highPrice: entry["2. high"],
-          lowPrice: entry["3. low"],
-          closePrice: entry["4. close"],
-          volume: entry["5. volume"],
-        };
-        prices.push(price);
-      }
-    }
-
-    res.render("dailyprice.ejs", { content: prices, symbol: stockSymbol });
+    res.render("dailyprice.ejs", { content: results, symbol: symbol });
   } catch (error) {
-    console.error(error);
+    console.error('Error in ticket search:', error);
     res.render("dailyprice.ejs", { content: "Error!", symbol: symbol });
   }
 });
-
-
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
