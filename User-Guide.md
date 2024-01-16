@@ -12,7 +12,9 @@ nodemon incomestatement.js
 nodemon prices.js
 nodemon dailyprice.js
 
+Run 
 nodemon serverFinal.js
+to test autocomplete search
 
 indexFinal has some wranning but is's ok
 
