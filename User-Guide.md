@@ -12,6 +12,10 @@ nodemon incomestatement.js
 nodemon prices.js
 nodemon dailyprice.js
 
+nodemon serverFinal.js
+
+indexFinal has some wranning but is's ok
+
 create .env file with content your API key 
 in format of 
 API_KEY=CPGFCGIQPO21QD23DXMMU

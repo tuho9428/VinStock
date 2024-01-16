@@ -1,0 +1,68 @@
+<!-- pickedStock.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Picked Stock</title>
+</head>
+<body>
+<h1>You have picked symbol <%= symbol %></h1>
+
+ 
+<div class="response-area">
+  <% if (Array.isArray(content) && content.length > 0) { %>
+    <% content.forEach((price) => { %>
+      <div>
+        <label for="timestamp">Timestamp:</label>
+        <div id="timestamp">
+          <%= price.timestamp %>
+        </div>
+      </div>
+      <div>
+        <label for="openPrice">Open Price:</label>
+        <div id="openPrice">
+          <%= price.openPrice || 'N/A' %>
+        </div>
+      </div>
+      <div>
+        <label for="highPrice">High Price:</label>
+        <div id="highPrice">
+          <%= price.highPrice || 'N/A' %>
+        </div>
+      </div>
+      <div>
+        <label for="lowPrice">Low Price:</label>
+        <div id="lowPrice">
+          <%= price.lowPrice || 'N/A' %>
+        </div>
+      </div>
+      <div>
+        <label for="closePrice">Close Price:</label>
+        <div id="closePrice">
+          <%= price.closePrice || 'N/A' %>
+        </div>
+      </div>
+      <div>
+        <label for="volume">Volume:</label>
+        <div id="volume">
+          <%= price.volume || 'N/A' %>
+        </div>
+      </div>
+  
+      <hr>
+    <% }) %>
+  <% } else { %>
+    <% if (content && content === "Error!") { %>
+      <p>Error fetching stock price data for <%= symbol %>.</p>
+    <% } else { %>
+      <p>No stock price data available for <%= symbol %>.</p>
+    <% } %>
+  <% } %>
+  
+  
+  
+  </div>
+</body>
+</html>
