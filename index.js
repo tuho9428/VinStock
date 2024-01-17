@@ -148,6 +148,12 @@ app.get("/contact", (req, res) => {
   res.render("contact.ejs");    
 });
 
+app.get("/graph", (req, res) => {
+  res.render("graph.ejs");
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+

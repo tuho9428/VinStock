@@ -51,6 +51,10 @@ app.post("/overview", async (req, res) => {
   }
 });
 
+app.get("/graph", (req, res) => {
+  res.render("graph.ejs");
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
