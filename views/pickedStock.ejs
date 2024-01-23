@@ -10,6 +10,16 @@
 <body>
 <h1>You have picked symbol <%= symbol %></h1>
 
+<form id="myForm" method="post" action='/result'>
+
+  <div><input type="submit" name="dailyPrice" value="Get Daily Price"></div>
+  <div><input type="submit" name="intradayPrice" value="Get Intraday Price"></div>
+  <div><input type="submit" name="weeklyPrice" value="Get Weekly Price"></div>
+  <div><input type="submit" name="monthlyPrice" value="Get Monthly Price"></div>
+  
+</form>
+
+<h2><%= symbol %></h2>
  
 <div class="response-area">
   <% if (Array.isArray(content) && content.length > 0) { %>
