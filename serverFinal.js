@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
- 
 dotenv.config();
 import express from "express";
 import bodyParser from "body-parser";
@@ -11,7 +10,7 @@ import csv from 'csv-parser';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const API_URL = "https://www.alphavantage.co";
+const API_URL = "https://alpha-vantage.p.rapidapi.com";
 
 app.use(methodOverride("_method"));
 app.use(express.static("public"));
@@ -19,10 +18,7 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
-
 let countries = [];
-
-
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
@@ -30,7 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
   countries = countries.map(item => item.symbolAndName);
-  res.render('index', { countries: countries });
+  res.render('indexFinal', { countries: countries });
 });
 
 let pickedSymbol; // Store the picked symbol here
@@ -40,15 +36,22 @@ app.get('/result', async (req, res) => {
 
   try {
       let config = {
+          method: 'GET',
+          url: API_URL + '/query',
           params: {
+              interval: '5min',
               function: 'TIME_SERIES_INTRADAY',
               symbol: pickedSymbol,
-              interval: '5min',
-              apikey: process.env.API_KEY, // Make sure you have your API key set up
+              datatype: 'json',
+              output_size: 'compact'
           },
+          headers: {
+              'x-rapidapi-host': 'alpha-vantage.p.rapidapi.com',
+              'x-rapidapi-key': process.env.RAPIDAPI_KEY
+          }
       };
 
-      const response = await axios.get(API_URL + '/query', config);
+      const response = await axios.request(config);
       const data = response.data;
 
       // Access and format the required information from the response data
@@ -73,7 +76,7 @@ app.get('/result', async (req, res) => {
           }
       }
 
-      res.render('pickedStock.ejs', { content: prices, symbol: stockSymbol });
+      res.render('pickedStock.ejs', { content: prices, symbol: stockSymbol, timeSerie: "INTRADAY" });
   } catch (error) {
       console.error(error);
       res.render('pickedStock.ejs', { content: 'Error!', symbol: pickedSymbol});
@@ -92,28 +95,28 @@ fs.createReadStream('stocks_name_latest.csv')
   });
 
 
-  app.post('/result', async (req, res) => {
-  
-    try {
-      let content;
-      let symbol = pickedSymbol;
-      
-      if (req.body.dailyPrice) {
-        content = await fetchStockPrices(symbol, 'TIME_SERIES_DAILY');
-      } else if (req.body.intradayPrice) {
-        content = await fetchStockPrices(symbol, 'TIME_SERIES_INTRADAY');
-      } else if (req.body.weeklyPrice) {
-        content = await fetchStockPrices(symbol, 'TIME_SERIES_WEEKLY');
-      } else if (req.body.monthlyPrice) {
-        content = await fetchStockPrices(symbol, 'TIME_SERIES_MONTHLY');
-      } 
-  
-      res.render('pickedStock.ejs', content);
-    } catch (error) {
-      console.error(error);
-      res.render('pickedStock.ejs', { content: 'Error!', symbol: pickedSymbol });
+app.post('/result', async (req, res) => {
+
+  try {
+    let content;
+    let symbol = pickedSymbol;
+
+    if (req.body.dailyPrice) {
+      content = await fetchStockPrices(symbol, 'TIME_SERIES_DAILY');
+    } else if (req.body.intradayPrice) {
+      content = await fetchStockPrices(symbol, 'TIME_SERIES_INTRADAY');
+    } else if (req.body.weeklyPrice) {
+      content = await fetchStockPrices(symbol, 'TIME_SERIES_WEEKLY');
+    } else if (req.body.monthlyPrice) {
+      content = await fetchStockPrices(symbol, 'TIME_SERIES_MONTHLY');
     }
-  });
+
+    res.render('pickedStock.ejs', content);
+  } catch (error) {
+    console.error(error);
+    res.render('pickedStock.ejs', { content: 'Error!', symbol: pickedSymbol });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
@@ -124,27 +127,33 @@ app.listen(PORT, () => {
 async function fetchStockPrices(symbol, timeSeriesFunction) {
   try {
     const config = {
+      method: 'GET',
+      url: API_URL + '/query',
       params: {
         function: timeSeriesFunction,
         symbol: symbol,
-        interval: timeSeriesFunction === 'TIME_SERIES_INTRADAY' ? '5min'  :
-                  timeSeriesFunction === 'TIME_SERIES_DAILY' ? '1d'  :
-                  timeSeriesFunction === 'TIME_SERIES_WEEKLY' ? '1wk'  :
-                  timeSeriesFunction === 'TIME_SERIES_MONTHLY' ? '1mo'  : undefined,
-        apikey: process.env.API_KEY,
+        interval: timeSeriesFunction === 'TIME_SERIES_INTRADAY' ? '5min' :
+          timeSeriesFunction === 'TIME_SERIES_DAILY' ? '1d' :
+          timeSeriesFunction === 'TIME_SERIES_WEEKLY' ? '1wk' :
+          timeSeriesFunction === 'TIME_SERIES_MONTHLY' ? '1mo' : undefined,
+        datatype: 'json',
+        output_size: 'compact'
       },
-      
+      headers: {
+        'x-rapidapi-host': 'alpha-vantage.p.rapidapi.com',
+        'x-rapidapi-key': process.env.RAPIDAPI_KEY
+      },
     };
 
-    const response = await axios.get(API_URL + '/query', config);
+    const response = await axios.request(config);
     const data = response.data;
 
     // Access and format the required information from the response data
     const metaData = data['Meta Data'];
-    const timeSeries = data[timeSeriesFunction === 'TIME_SERIES_INTRADAY' ? 'Time Series (5min)' : 
-                            timeSeriesFunction === 'TIME_SERIES_DAILY' ? 'Time Series (Daily)' : 
-                            timeSeriesFunction === 'TIME_SERIES_WEEKLY' ? 'Weekly Time Series' : 
-                            timeSeriesFunction === 'TIME_SERIES_MONTHLY' ? 'Monthly Time Series' : undefined];
+    const timeSeries = data[timeSeriesFunction === 'TIME_SERIES_INTRADAY' ? 'Time Series (5min)' :
+      timeSeriesFunction === 'TIME_SERIES_DAILY' ? 'Time Series (Daily)' :
+        timeSeriesFunction === 'TIME_SERIES_WEEKLY' ? 'Weekly Time Series' :
+          timeSeriesFunction === 'TIME_SERIES_MONTHLY' ? 'Monthly Time Series' : undefined];
 
     // Construct the prices array to pass to the template
     const prices = [];
@@ -164,8 +173,8 @@ async function fetchStockPrices(symbol, timeSeriesFunction) {
         prices.push(price);
       }
     }
-
-    return { content: prices, symbol: stockSymbol };
+    const timeSerie = timeSeriesFunction.substring('TIME_SERIES_'.length);
+    return { content: prices, symbol: stockSymbol, timeSerie: timeSerie };
   } catch (error) {
     console.error(error);
     throw new Error('Failed to fetch stock prices.');

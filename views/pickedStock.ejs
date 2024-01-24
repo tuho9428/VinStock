@@ -1,26 +1,34 @@
-<!-- pickedStock.ejs -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Picked Stock</title>
-</head>
-<body>
+<%- include("partials/header.ejs") %>
+
 <h1>You have picked symbol <%= symbol %></h1>
-
-<form id="myForm" method="post" action='/result'>
-
-  <div><input type="submit" name="dailyPrice" value="Get Daily Price"></div>
-  <div><input type="submit" name="intradayPrice" value="Get Intraday Price"></div>
-  <div><input type="submit" name="weeklyPrice" value="Get Weekly Price"></div>
-  <div><input type="submit" name="monthlyPrice" value="Get Monthly Price"></div>
   
+<form id="myForm" method="post" action='/result' class="button-container">
+  <button type="submit" name="dailyPrice" value="Get Daily Price" onclick="displayClickedButton(this)">Get Daily Price</button>
+  <button type="submit" name="intradayPrice" value="Get Intraday Price" onclick="displayClickedButton(this)">Get Intraday Price</button>
+  <button type="submit" name="weeklyPrice" value="Get Weekly Price" onclick="displayClickedButton(this)">Get Weekly Price</button>
+  <button type="submit" name="monthlyPrice" value="Get Monthly Price" onclick="displayClickedButton(this)">Get Monthly Price</button>
 </form>
 
 <h2><%= symbol %></h2>
- 
+<div>
+  <label for="timeSerie">Time Serie:</label>
+  <div id="timeSerie">
+    <%= timeSerie %>
+  </div>
+
+<div id="clickedButtonInfo"></div>
+
+<!-- Add the JavaScript function to display the clicked button -->
+<script>
+  function displayClickedButton(button) {
+    var clickedButtonValue = button.value;
+    document.getElementById('clickedButtonInfo').innerText = 'Clicked Button: ' + clickedButtonValue;
+  }
+</script>
+
+<!-- Add the canvas element for the line chart -->
+<canvas id="lineChart"></canvas>
+
 <div class="response-area">
   <% if (Array.isArray(content) && content.length > 0) { %>
     <% content.forEach((price) => { %>
@@ -60,9 +68,67 @@
           <%= price.volume || 'N/A' %>
         </div>
       </div>
-  
+
       <hr>
     <% }) %>
+
+    <!-- Add the JavaScript code to render the line chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      // Step 5: Extract necessary data points for the line chart
+      const labels = [];
+      const closePrices = [];
+
+      <% content.forEach((price) => { %>
+        labels.push('<%= price.timestamp %>');
+        closePrices.push('<%= price.closePrice || 'N/A' %>');
+      <% }) %>
+
+      // Step 6: Create a new instance of the line chart
+      const ctx = document.getElementById('lineChart').getContext('2d');
+      const lineChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+              labels: labels,
+              datasets: [{
+                  label: 'Close Prices',
+                  data: closePrices,
+                  borderColor: 'blue',
+                  fill: false
+              }]
+          },
+          options: {
+              responsive: true,
+              scales: {
+                  x: {
+                      display: true,
+                      title: {
+                          display: true,
+                          text: 'Timestamp'
+                      },
+                      grid: {
+                        display: false,
+                      }
+                    
+                  },
+                  y: {
+                      display: true,
+                      title: {
+                          display: true,
+                          text: 'Close Price'
+                      },
+                      grid: {
+                        display: false,
+                      }
+                  }
+              }
+          }
+      });
+
+      // Step 7: Render the chart on the canvas element
+      lineChart.render();
+    </script>
+
   <% } else { %>
     <% if (content && content === "Error!") { %>
       <p>Error fetching stock price data for <%= symbol %>.</p>
@@ -70,9 +136,7 @@
       <p>No stock price data available for <%= symbol %>.</p>
     <% } %>
   <% } %>
-  
-  
-  
-  </div>
-</body>
-</html>
+
+</div>
+
+<%- include("partials/footer.ejs") %>
