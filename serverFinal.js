@@ -25,9 +25,9 @@ app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
-  countries = countries.map(item => item.symbolAndName);
-  res.render('indexFinal', { countries: countries });
+  res.render('search', { countries: JSON.stringify(countries.map(item => item.symbolAndName)) });
 });
+
 
 let pickedSymbol; // Store the picked symbol here
 
@@ -83,7 +83,7 @@ app.get('/result', async (req, res) => {
   }
 });
 
-fs.createReadStream('stocks_name_latest.csv')
+fs.createReadStream('./public/scripts/stocks_name_latest.csv')
   .pipe(csv())
   .on('data', (row) => {
     countries.push(row);

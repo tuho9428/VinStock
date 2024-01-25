@@ -183,3 +183,18 @@ textarea {
     #delete:hover {
       background-color: #c0392b;
     }
+
+/* Add these styles to your stylesheet or in a <style> block */
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+button {
+  width: 150px; /* Adjust the width as needed */
+  padding: 10px;
+  margin: 0;
+}
