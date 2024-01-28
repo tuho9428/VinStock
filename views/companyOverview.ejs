@@ -4,8 +4,11 @@
 <h1>Company Overview for <%= symbol %></h1>
 
 <div id="companyOverview">
-  <!-- Display the company overview information here -->
-  <%= JSON.stringify(content, null, 2) %>
+  <p><strong>Company Name:</strong> <%= content.companyName %></p>
+  <p><strong>Exchange:</strong> <%= content.exchange %></p>
+  <p><strong>Symbol:</strong> <%= content.symbol %></p>
+  <p><strong>Description:</strong> <%= content.description %></p>
+  <!-- Add more properties as needed -->
 </div>
 
 <%- include("partials/footer.ejs") %>
