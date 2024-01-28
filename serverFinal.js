@@ -103,9 +103,12 @@ app.post('/result', async (req, res) => {
       content = await fetchStockPrices(symbol, 'TIME_SERIES_WEEKLY');
     } else if (req.body.monthlyPrice) {
       content = await fetchStockPrices(symbol, 'TIME_SERIES_MONTHLY');
+    } else if (req.body.incomeStatement) {
+      content = await fetchIncomeStatement(symbol);
+      res.render('incomeStatement.ejs', content);
     }
 
-    if (!req.body.companyOverview) {
+    if (!req.body.companyOverview && !req.body.incomeStatement) {
       res.render('pickedStock.ejs', content);
     }
   } catch (error) {
@@ -208,5 +211,33 @@ async function fetchCompanyOverview(symbol) {
   } catch (error) {
     console.error('Error in fetchCompanyOverview:', error);
     throw new Error('Failed to fetch company overview.');
+  }
+}
+async function fetchIncomeStatement(symbol) {
+  try {
+    const config = {
+      method: 'GET',
+      url: API_URL + '/query',
+      params: {
+        function: 'INCOME_STATEMENT',
+        symbol: symbol,
+        apikey: process.env.RAPIDAPI_KEY,
+      },
+      headers: {
+        'x-rapidapi-host': 'alpha-vantage.p.rapidapi.com',
+        'x-rapidapi-key': process.env.RAPIDAPI_KEY
+      },
+    };
+
+    const response = await axios.request(config);
+    const data = response.data;
+
+    // Access and format the required information from the response data
+    // Modify this part based on the actual structure of the Income Statement data
+
+    return { content: data, symbol: symbol, timeSerie: "Income Statement" };
+  } catch (error) {
+    console.error('Error in fetchIncomeStatement:', error);
+    throw new Error('Failed to fetch income statement.');
   }
 }
