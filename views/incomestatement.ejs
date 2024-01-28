@@ -1,15 +1,56 @@
-<%- include("partials/header.ejs") %>
+<!-- views/incomeStatement.ejs -->
 
-<h1>Income Statement for <%= symbol %></h1>
+<!-- ... other HTML and head content ... -->
 
-<div class="response-area">
-  <% if (content) { %>
-    <!-- Display the Income Statement data -->
-    <!-- Modify this part based on the actual structure of the Income Statement data -->
-    <pre><%= JSON.stringify(content, null, 2) %></pre>
-  <% } else { %>
-    <p>Error fetching income statement data for <%= symbol %>.</p>
-  <% } %>
-</div>
+<body>
+  <h1>Income Statement for <%= content.symbol %></h1>
 
-<%- include("partials/footer.ejs") %>
+  <h2>Annual Reports</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Fiscal Date Ending</th>
+        <th>Reported Currency</th>
+        <th>Gross Profit</th>
+        <th>Total Revenue</th>
+        <!-- Add more headings based on your data structure -->
+      </tr>
+    </thead>
+    <tbody>
+      <% content.annualReports.forEach((report) => { %>
+        <tr>
+          <td><%= report.fiscalDateEnding %></td>
+          <td><%= report.reportedCurrency %></td>
+          <td><%= report.grossProfit %></td>
+          <td><%= report.totalRevenue %></td>
+          <!-- Add more cells based on your data structure -->
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+
+  <h2>Quarterly Reports</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Fiscal Date Ending</th>
+        <th>Reported Currency</th>
+        <th>Gross Profit</th>
+        <th>Total Revenue</th>
+        <!-- Add more headings based on your data structure -->
+      </tr>
+    </thead>
+    <tbody>
+      <% content.quarterlyReports.forEach((report) => { %>
+        <tr>
+          <td><%= report.fiscalDateEnding %></td>
+          <td><%= report.reportedCurrency %></td>
+          <td><%= report.grossProfit %></td>
+          <td><%= report.totalRevenue %></td>
+          <!-- Add more cells based on your data structure -->
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</body>
+</html>
