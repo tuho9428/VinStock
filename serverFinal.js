@@ -20,14 +20,9 @@ app.use(express.json());
 
 let countries = [];
 
-app.set('view engine', 'ejs');
-app.use(express.static('public'));
-app.use(express.urlencoded({ extended: true }));
-
 app.get('/', (req, res) => {
   res.render('search', { countries: JSON.stringify(countries.map(item => item.symbolAndName)) });
 });
-
 
 let pickedSymbol; // Store the picked symbol here
 
@@ -35,51 +30,51 @@ app.get('/result', async (req, res) => {
   pickedSymbol = req.query.symbol;
 
   try {
-      let config = {
-          method: 'GET',
-          url: API_URL + '/query',
-          params: {
-              interval: '5min',
-              function: 'TIME_SERIES_INTRADAY',
-              symbol: pickedSymbol,
-              datatype: 'json',
-              output_size: 'compact'
-          },
-          headers: {
-              'x-rapidapi-host': 'alpha-vantage.p.rapidapi.com',
-              'x-rapidapi-key': process.env.RAPIDAPI_KEY
-          }
-      };
-
-      const response = await axios.request(config);
-      const data = response.data;
-
-      // Access and format the required information from the response data
-      const timeSeries = data['Time Series (5min)'];
-
-      // Construct the prices array to pass to the template
-      const prices = [];
-      const stockSymbol = pickedSymbol;
-
-      for (const timestamp in timeSeries) {
-          if (timeSeries.hasOwnProperty(timestamp)) {
-              const entry = timeSeries[timestamp];
-              const price = {
-                  timestamp: timestamp,
-                  openPrice: entry['1. open'],
-                  highPrice: entry['2. high'],
-                  lowPrice: entry['3. low'],
-                  closePrice: entry['4. close'],
-                  volume: entry['5. volume'],
-              };
-              prices.push(price);
-          }
+    let config = {
+      method: 'GET',
+      url: API_URL + '/query',
+      params: {
+        interval: '5min',
+        function: 'TIME_SERIES_INTRADAY',
+        symbol: pickedSymbol,
+        datatype: 'json',
+        output_size: 'compact'
+      },
+      headers: {
+        'x-rapidapi-host': 'alpha-vantage.p.rapidapi.com',
+        'x-rapidapi-key': process.env.RAPIDAPI_KEY
       }
+    };
 
-      res.render('pickedStock.ejs', { content: prices, symbol: stockSymbol, timeSerie: "INTRADAY" });
+    const response = await axios.request(config);
+    const data = response.data;
+
+    // Access and format the required information from the response data
+    const timeSeries = data['Time Series (5min)'];
+
+    // Construct the prices array to pass to the template
+    const prices = [];
+    const stockSymbol = pickedSymbol;
+
+    for (const timestamp in timeSeries) {
+      if (timeSeries.hasOwnProperty(timestamp)) {
+        const entry = timeSeries[timestamp];
+        const price = {
+          timestamp: timestamp,
+          openPrice: entry['1. open'],
+          highPrice: entry['2. high'],
+          lowPrice: entry['3. low'],
+          closePrice: entry['4. close'],
+          volume: entry['5. volume'],
+        };
+        prices.push(price);
+      }
+    }
+
+    res.render('pickedStock.ejs', { content: prices, symbol: stockSymbol, timeSerie: "INTRADAY" });
   } catch (error) {
-      console.error(error);
-      res.render('pickedStock.ejs', { content: 'Error!', symbol: pickedSymbol});
+    console.error('Error in /result route:', error);
+    res.render('pickedStock.ejs', { content: 'Error!', symbol: pickedSymbol });
   }
 });
 
@@ -90,18 +85,17 @@ fs.createReadStream('./public/scripts/stocks_name_latest.csv')
   })
   .on('end', () => {
     console.log('CSV file successfully processed');
-    var convertedArray = countries.map(item => item.symbolAndName);
-    //console.log(convertedArray);
   });
 
-
 app.post('/result', async (req, res) => {
-
   try {
     let content;
     let symbol = pickedSymbol;
 
-    if (req.body.dailyPrice) {
+    if (req.body.companyOverview) {
+      content = await fetchCompanyOverview(symbol);
+      res.render('companyOverview.ejs', content);
+    } else if (req.body.dailyPrice) {
       content = await fetchStockPrices(symbol, 'TIME_SERIES_DAILY');
     } else if (req.body.intradayPrice) {
       content = await fetchStockPrices(symbol, 'TIME_SERIES_INTRADAY');
@@ -111,9 +105,11 @@ app.post('/result', async (req, res) => {
       content = await fetchStockPrices(symbol, 'TIME_SERIES_MONTHLY');
     }
 
-    res.render('pickedStock.ejs', content);
+    if (!req.body.companyOverview) {
+      res.render('pickedStock.ejs', content);
+    }
   } catch (error) {
-    console.error(error);
+    console.error('Error in /result POST route:', error);
     res.render('pickedStock.ejs', { content: 'Error!', symbol: pickedSymbol });
   }
 });
@@ -121,7 +117,6 @@ app.post('/result', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
 
 // Fetch stock prices based on time series function
 async function fetchStockPrices(symbol, timeSeriesFunction) {
@@ -176,7 +171,42 @@ async function fetchStockPrices(symbol, timeSeriesFunction) {
     const timeSerie = timeSeriesFunction.substring('TIME_SERIES_'.length);
     return { content: prices, symbol: stockSymbol, timeSerie: timeSerie };
   } catch (error) {
-    console.error(error);
+    console.error('Error in fetchStockPrices:', error);
     throw new Error('Failed to fetch stock prices.');
+  }
+}
+
+async function fetchCompanyOverview(symbol) {
+  try {
+    const config = {
+      method: 'GET',
+      url: API_URL + '/query',
+      params: {
+        function: 'OVERVIEW',
+        symbol: symbol,
+        apikey: process.env.RAPIDAPI_KEY,
+      },
+      headers: {
+        'x-rapidapi-host': 'alpha-vantage.p.rapidapi.com',
+        'x-rapidapi-key': process.env.RAPIDAPI_KEY
+      },
+    };
+
+    const response = await axios.request(config);
+    const data = response.data;
+
+    // Access and format the required information from the response data
+    const companyOverview = {
+      companyName: data.Name,
+      exchange: data.Exchange,
+      symbol: data.Symbol,
+      description: data.Description,
+      // Add more properties based on the actual structure of the data
+    };
+
+    return { content: companyOverview, symbol: symbol, timeSerie: "Company Overview" };
+  } catch (error) {
+    console.error('Error in fetchCompanyOverview:', error);
+    throw new Error('Failed to fetch company overview.');
   }
 }

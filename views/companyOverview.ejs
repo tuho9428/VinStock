@@ -1,0 +1,11 @@
+<!-- companyOverview.ejs -->
+<%- include("partials/header.ejs") %>
+
+<h1>Company Overview for <%= symbol %></h1>
+
+<div id="companyOverview">
+  <!-- Display the company overview information here -->
+  <%= JSON.stringify(content, null, 2) %>
+</div>
+
+<%- include("partials/footer.ejs") %>
