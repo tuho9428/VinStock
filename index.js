@@ -101,7 +101,6 @@ app.post('/refresh', async (req, res) => {
     pickedSymbol = req.body.refresh; // Retrieve symbol from form data if not in query parameter
   } // Assuming symbol is sent in the request body
 
-
   try {
     const config = {
       method: 'GET',
@@ -135,25 +134,44 @@ app.post('/refresh', async (req, res) => {
       change_percent: parseFloat(globalQuoteData['10. change percent'])
     };
 
-    const query = `INSERT INTO stock_data (symbol, open_price, high_price, low_price, current_price, volume, last_trading_day, previous_close, change_amount, change_percent) 
-                   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`;
+    const queryCheck = `SELECT * FROM stock_data WHERE symbol = $1`;
+    const checkResult = await db.query(queryCheck, [stockData.symbol]);
 
-    const values = [
-      stockData.symbol,
-      stockData.open_price,
-      stockData.high_price,
-      stockData.low_price,
-      stockData.current_price,
-      stockData.volume,
-      stockData.last_trading_day,
-      stockData.previous_close,
-      stockData.change_amount,
-      stockData.change_percent
-    ];
+    if (checkResult.rows.length > 0) {
+      const updateQuery = `UPDATE stock_data 
+                           SET symbol = $1, open_price = $2, high_price = $3, low_price = $4, current_price = $5, volume = $6,
+                               last_trading_day = $7, previous_close = $8, change_amount = $9, change_percent = $10
+                           WHERE symbol = $1`;
+      await db.query(updateQuery, [
+        stockData.symbol,
+        stockData.open_price,
+        stockData.high_price,
+        stockData.low_price,
+        stockData.current_price,
+        stockData.volume,
+        stockData.last_trading_day,
+        stockData.previous_close,
+        stockData.change_amount,
+        stockData.change_percent
+      ]);
+    } else {
+      const insertQuery = `INSERT INTO stock_data (symbol, open_price, high_price, low_price, current_price, volume, last_trading_day, previous_close, change_amount, change_percent) 
+                           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`;
+      await db.query(insertQuery, [
+        stockData.symbol,
+        stockData.open_price,
+        stockData.high_price,
+        stockData.low_price,
+        stockData.current_price,
+        stockData.volume,
+        stockData.last_trading_day,
+        stockData.previous_close,
+        stockData.change_amount,
+        stockData.change_percent
+      ]);
+    }
 
-    await db.query(query, values);
-
-    res.redirect(`/show?symbol=${pickedSymbol}`); // Redirect to show route after inserting data
+    res.redirect(`/show?symbol=${pickedSymbol}`); // Redirect to show route after inserting or updating data
   } catch (error) {
     console.error('Error in /refresh route:', error);
     res.render('show.ejs', { content: 'Error!', symbol: pickedSymbol });
