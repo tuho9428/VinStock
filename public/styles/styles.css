@@ -60,3 +60,36 @@ input[type=submit] {
   background-color: DodgerBlue !important; 
   color: #ffffff; 
 }
+
+/* CSS for the div containing the forms and buttons */
+div.button-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* CSS for the forms inside the div */
+div.home-container form {
+  margin: 10px; /* Adjust as needed */
+}
+
+/* CSS for the buttons inside the forms */
+div.home-container form button {
+  padding: 10px 20px;
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+/* CSS for button hover effect */
+div.home-container form button:hover {
+  background-color: #45a049; /* Darker Green */
+}
+
+

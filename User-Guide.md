@@ -1,3 +1,26 @@
+
+
+Create database using q.sql
+
+Your .env should have:
+
+RAPIDAPI_KEY="d5099a"
+GOOGLE_CLIENT_ID="7368907m"
+GOOGLE_CLIENT_SECRET="GOCSPX-TcJYMIMc9nzDzE"
+SESSION_SECRET="CAN_BE_WHATEVER"
+PG_USER="postgres"
+PG_HOST="localhost"
+PG_DATABASE="YOUR_DATABASE_NAME"
+PG_PASSWORD="123456"
+PG_PORT="500"
+
+GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET
+SESSION_SECRET
+are from Udemy course Section 35: 272 Set up your Google OAuth Credentials
+
+Some ejs has some wranning but is's ok
+
 In terminal, run:
 
 npm i
@@ -5,19 +28,5 @@ npm i
 to install npm packages.
 
 Run 
-nodemon serverFinal.js
-to test autocomplete search
-
-search.ejs has some wranning but is's ok
-
-create .env file with content your API key 
-in format of 
-
-RAPIDAPI_KEY=eaera184b8msh40ff1b3e52b621p1329f7jsn4720573486ad
-
-from https://alpha-vantage.p.rapidapi.com
-
-note: 
-eaera184b8msh40ff1b3e52b621p1329f7jsn4720573486ad is a fake key
-replace eaera184b8msh40ff1b3e52b621p1329f7jsn4720573486ad with your real RAPID API KEY
+nodemon index.js
 

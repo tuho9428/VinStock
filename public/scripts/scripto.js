@@ -110,24 +110,12 @@ document.getElementById('searchForm').addEventListener('submit', function(event)
     search();
 });
 
-
 function search() {
     var searchInput = document.getElementById('myInput').value;
     var stockSymbol = extractSymbol(searchInput);
 
     // Redirect to the server route with the stock symbol
-    window.location.href = '/result?symbol=' + stockSymbol;
-}
-
-document.getElementById('refeshForm').addEventListener('submit', function(event) {
-  event.preventDefault();
-  search1();
-});
-
-function search1() {
-
-  // Redirect to the server route with the stock symbol
-  window.location.href = '/refesh?symbol=' + stockSymbol;
+    window.location.href = '/overview?symbol=' + stockSymbol;
 }
 
 function extractSymbol(searchInput) {

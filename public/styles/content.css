@@ -186,15 +186,28 @@ textarea {
 
 /* Add these styles to your stylesheet or in a <style> block */
 
-.button-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.button-container{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 4 columns */
+  gap: 10px; /* Gap between buttons */
+  justify-content: center;
+  align-items: stretch;
+  margin-bottom: 20px;
+}
+.home-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 4 columns */
+  gap: 10px; /* Gap between buttons */
+  justify-content: center;
+  align-items: stretch;
   margin-bottom: 20px;
 }
 
 button {
-  width: 150px; /* Adjust the width as needed */
+  width: 100%; /* Button width spans the grid cell */
   padding: 10px;
   margin: 0;
 }
+
+
+

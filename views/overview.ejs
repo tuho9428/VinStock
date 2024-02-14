@@ -1,26 +1,14 @@
+<!-- companyOverview.ejs -->
 <%- include("partials/header.ejs") %>
 
-<h1>Overview</h1>
-<h2><%= symbol %></h2>
+<h1>Company Overview for <%= symbol %></h1>
 
-<form id="myForm" method="post" action="/overview">
-  <label for="scoreInput">Symbol:</label>
-  <input type="text" id="scoreInput" name="symbol" placeholder="Enter a Symbol" required>
-
-  <label for="submit">Submit</label>
-  <input id="post" type="submit" value="Get Overview">
-</form>
-
-<div class="response-area">
-  <% if (stockInfo) { %>
-    <h2><%= stockInfo.Symbol %></h2>
-    <p><%= stockInfo.Name %></p>
-    <p><%= stockInfo.Description %></p>
-    <!-- Display other relevant stock information -->
-  <% } else { %>
-    <p>No information available for <%= symbol %>.</p>
-  <% } %>
+<div id="companyOverview">
+  <p><strong>Company Name:</strong> <%= content.companyName %></p>
+  <p><strong>Exchange:</strong> <%= content.exchange %></p>
+  <p><strong>Symbol:</strong> <%= content.symbol %></p>
+  <p><strong>Description:</strong> <%= content.description %></p>
+  <!-- Add more properties as needed -->
 </div>
-
 
 <%- include("partials/footer.ejs") %>

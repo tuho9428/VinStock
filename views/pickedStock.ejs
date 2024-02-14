@@ -1,18 +1,5 @@
 <%- include("partials/header.ejs") %>
 
-<h1>You have picked symbol <%= symbol %></h1>
-  
-<form id="myForm" method="post" action='/result' class="button-container">
-  <button type="submit" name="dailyPrice" value="Get Daily Price" onclick="displayClickedButton(this)">Get Daily Price</button>
-  <button type="submit" name="intradayPrice" value="Get Intraday Price" onclick="displayClickedButton(this)">Get Intraday Price</button>
-  <button type="submit" name="weeklyPrice" value="Get Weekly Price" onclick="displayClickedButton(this)">Get Weekly Price</button>
-  <button type="submit" name="monthlyPrice" value="Get Monthly Price" onclick="displayClickedButton(this)">Get Monthly Price</button>
-  <button type="submit" name="companyOverview" value="Get Company Overview" onclick="displayClickedButton(this)">Get Company Overview</button>
-  <button type="submit" name="incomeStatement" value="Get Income Statement" onclick="displayClickedButton(this)">Get Income Statement</button>
-
-
-</form>
-
 <h2><%= symbol %></h2>
 <div>
   <label for="timeSerie">Time Serie:</label>
@@ -24,6 +11,15 @@
 
 <!-- Add the canvas element for the line chart -->
 <canvas id="lineChart"></canvas>
+
+<form id="myForm" method="post" action='/result' class="button-container">
+  <button type="submit" name="dailyPrice" value="Get Daily Price" onclick="displayClickedButton(this)">Daily</button>
+  <button type="submit" name="intradayPrice" value="Get Intraday Price" onclick="displayClickedButton(this)">Intraday</button>
+  <button type="submit" name="weeklyPrice" value="Get Weekly Price" onclick="displayClickedButton(this)">Weekly</button>
+  <button type="submit" name="monthlyPrice" value="Get Monthly Price" onclick="displayClickedButton(this)">Monthly</button>
+  <button type="submit" name="companyOverview" value="Get Company Overview" onclick="displayClickedButton(this)">Company Overview</button>
+  <button type="submit" name="incomeStatement" value="Get Income Statement" onclick="displayClickedButton(this)">Income Statement</button>
+</form>
 
 <div class="response-area">
   <% if (Array.isArray(content) && content.length > 0) { %>
@@ -75,7 +71,7 @@
       const labels = [];
       const closePrices = [];
 
-      <% content.forEach((price) => { %>
+      <% content.slice(0, 52).reverse().forEach((price) => { %>
         labels.push('<%= price.timestamp %>');
         closePrices.push('<%= price.closePrice || 'N/A' %>');
       <% }) %>
@@ -134,5 +130,7 @@
   <% } %>
 
 </div>
+
+
 
 <%- include("partials/footer.ejs") %>
