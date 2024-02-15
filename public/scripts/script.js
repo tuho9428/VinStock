@@ -18,26 +18,25 @@ function autocomplete(inp, arr) {
       this.parentNode.appendChild(a);
       /*for each item in the array...*/
       for (i = 0; i < arr.length; i++) {
-        if (arr[i].toUpperCase().startsWith(val.toUpperCase())) {
-          b = document.createElement("DIV");
-          b.innerHTML += arr[i].replace(new RegExp(val, "ig"), match => `<strong>${match}</strong>`);
-          b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-          b.addEventListener("click", function(e) {
-            inp.value = this.getElementsByTagName("input")[0].value;
-            closeAllLists();
-          });
-          a.insertBefore(b, a.firstChild); // Insert at the beginning
-        } else if (arr[i].toUpperCase().includes(val.toUpperCase())) {
-          b = document.createElement("DIV");
-          b.innerHTML += arr[i].replace(new RegExp(val, "ig"), match => `<strong>${match}</strong>`);
-          b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-          b.addEventListener("click", function(e) {
-            inp.value = this.getElementsByTagName("input")[0].value;
-            closeAllLists();
-          });
-          a.appendChild(b);
+        if (
+            (arr[i].toUpperCase().startsWith(val.toUpperCase()) || arr[i].toUpperCase().includes('- ' + val.toUpperCase())) &&
+            (arr[i].toUpperCase().includes(' - ' + val.toUpperCase()) || arr[i].toUpperCase().includes(' - ' + val.toUpperCase()))
+        ) {
+            b = document.createElement("DIV");
+            b.innerHTML += arr[i].replace(new RegExp(val, "ig"), match => `<strong>${match}</strong>`);
+            b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+            b.addEventListener("click", function(e) {
+                inp.value = this.getElementsByTagName("input")[0].value;
+                closeAllLists();
+            });
+            if (arr[i].toUpperCase().startsWith(val.toUpperCase())) {
+                a.insertBefore(b, a.firstChild); // Insert at the beginning
+            } else {
+                a.appendChild(b);
+            }
         }
-      }
+    }
+    
   });
   /*execute a function presses a key on the keyboard:*/
   inp.addEventListener("keydown", function(e) {
