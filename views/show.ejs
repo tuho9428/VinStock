@@ -1,0 +1,87 @@
+<%- include("partials/header.ejs") %>
+
+<h2><%= symbol %></h2>
+<div>
+  <form id="refreshForm" method="POST" action='/refresh?symbol=<%=symbol%>' class="button-container">
+    <button type="submit" name="refresh" value="<%=symbol%>">Refresh</button>
+  </form>
+  
+
+  <div class="response-area">
+    <% if (content && content.symbol) { %>
+      <div>
+        <label for="symbol">Symbol:</label>
+        <div id="symbol">
+          <%= content.symbol %>
+        </div>
+      </div>
+      <div>
+        <label for="open">Open Price:</label>
+        <div id="openPrice">
+          <%= content.open_price || 'N/A' %>
+        </div>
+      </div>
+      <div>
+        <label for="high">High Price:</label>
+        <div id="highPrice">
+          <%= content.high_price || 'N/A' %>
+        </div>
+      </div>
+      <div>
+        <label for="low">Low Price:</label>
+        <div id="lowPrice">
+          <%= content.low_price || 'N/A' %>
+        </div>
+      </div>
+      <div>
+        <label for="price">Current Price:</label>
+        <div id="currentPrice">
+          <%= content.current_price || 'N/A' %>
+        </div>
+      </div>
+      <div>
+        <label for="volume">Volume:</label>
+        <div id="volume">
+          <%= content.volume || 'N/A' %>
+        </div>
+      </div>
+      <div>
+        <label for="latestTradingDay">Latest Trading Day:</label>
+        <div id="latestTradingDay">
+          <%= content.last_trading_day || 'N/A' %>
+        </div>
+      </div>
+      <div>
+        <label for="previousClose">Previous Close:</label>
+        <div id="previousClose">
+          <%= content.previous_close || 'N/A' %>
+        </div>
+      </div>
+      <div>
+        <label for="change">Change:</label>
+        <div id="change">
+          <%= content.change_amount || 'N/A' %>
+        </div>
+      </div>
+      <div>
+        <label for="changePercent">Change Percent:</label>
+        <div id="changePercent">
+          <%= content.change_percent || 'N/A' %>
+        </div>
+      </div>
+
+  
+
+    <% } else { %>
+      <% if (content && content === "Error!") { %>
+        <p>Error fetching stock price data for <%= symbol %>.</p>
+      <% } else { %>
+        <p>No stock price data available for <%= symbol %>.</p>
+      <% } %>
+    <% } %>
+
+  </div>
+
+</div>
+
+<%- include("partials/footer.ejs") %>

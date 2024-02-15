@@ -1,21 +1,75 @@
-<%-  include("partials/header.ejs") %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Single Line Chart</title>
+    <style>
+        canvas {
+            max-width: 50%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
 
-<h1>About Me</h1>
-<img class="profile" src="images/cat.jpeg" alt="cat profile">
-<p>
-  Quam purus justo enim purus, dolor enim, ut eu lectus nam eget nibh. Ante illum nullam leo, vivamus aliquam massa
-  massainceptos fermentum porttitor, blandit vehicula, lorem in placerat ut aliquam at sociosqu. Vivamus duis
-  ultricies
-  aliquam placerat, tincidunt scelerisque imperdiet, egestas erat vel. Libero rerum. Donec ligula tristique, purus
-  montes,
-  feugiatid nunc in a nec. Duis odio, vitae sed etiam mi massa, laoreet amet purus amet rhoncus, eget sed, arcu
-  urna.
-  Maecenaswisi id, at donec enim. Proin nisl, pulvinar leo suspendisse, cum parturient non, congue leo et ut in,
-  neque ut
-  lacusauctor quam fermentum urna. Metus quis, mauris dictum aptent ultrices nulla viverra ornare, tempor elit enim
-  leo
-  donec,sed sed. Vivamus sapien facilisi, tempor arcu nulla justo sed et, eget suspendisse lacus sed nunc mattis
-  lectus.
-  Metusgravida.</p>
+<canvas id="lineChart"></canvas>
 
-  <%- include("partials/footer.ejs") %>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Your data array
+var data = [10, 12, 12, 14, 16,12, 14, 16,12, 14, 16, 10,11];
+
+// Get the canvas element
+var ctx = document.getElementById('lineChart').getContext('2d');
+
+// Create a line chart
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: Array.from({ length: data.length }, (_, i) => i), // Generating labels [1, 2, 3, ...]
+        datasets: [{
+            label: 'My Line Chart',
+            data: data,
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.1
+
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                type: 'linear',
+                position: 'bottom',
+                
+                grid: {
+                    display: false,
+                }
+            },
+            y: {
+                grid: {
+                    display: false
+                }
+            }
+        },
+        elements: {
+            point: {
+                radius: 0
+            }
+        },
+        plugins: {
+            tooltip: {
+                enabled: true
+            }
+        }
+    }
+});
+
+</script>
+
+</body>
+</html>

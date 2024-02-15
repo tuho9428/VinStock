@@ -1,0 +1,19 @@
+<%- include("partials/header.ejs") %>
+
+<h2>Autocomplete Search</h2>
+
+<p>Start typing:</p>
+<!--Make sure the form has the autocomplete function switched off:-->
+<form id="searchForm" autocomplete="off" action="/overview" method="GET">
+  <div class="autocomplete" style="width:300px;">
+    <input id="myInput" type="text" name="myCountry" placeholder="Country">
+  </div>
+  <input id="submitBtn" type="submit" style="color: brown;">
+</form>
+
+<script>
+  let countries = <%- countries %>;
+</script>
+<script src="/scripts/scripto.js"></script>
+
+<%- include("partials/footer.ejs") %>
