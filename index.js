@@ -242,6 +242,22 @@ app.get("/contact", (req, res) => {
   res.render("contact.ejs");
 });
 
+app.get("/login", (req, res) => {
+  res.render("login.ejs");
+});
+
+app.get("/register", (req, res) => {
+  res.render("register.ejs");
+});
+
+app.get("/products", (req, res) => {
+  res.render("products.ejs");
+});
+
+app.get("/service", (req, res) => {
+  res.render("works.ejs");
+});
+
 app.get("/graph", (req, res) => {
   res.render("graph.ejs");
 });
