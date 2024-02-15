@@ -93,7 +93,7 @@ app.get("/overview", async (req, res) => {
   }
 });
 
-// show list stock
+// show list stock and refresh
 app.post('/refresh', async (req, res) => {
   let pickedSymbol = req.query.symbol; // Retrieve symbol from URL query parameter
 
@@ -198,8 +198,7 @@ app.get('/show', async (req, res) => {
 });
 
 
-
-
+// get result from search
 app.get('/result', async (req, res) => {
   pickedSymbol = req.query.symbol;
 
@@ -447,7 +446,6 @@ passport.serializeUser((user, cb) => {
 passport.deserializeUser((user, cb) => {
   cb(null, user);
 });
-
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
