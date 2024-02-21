@@ -52,11 +52,52 @@ app.get("/", (req, res) => {
 
 let pickedSymbol; // Store the picked symbol here
 
-app.get("/search", (req, res) => {
-  res.render('search', { countries: JSON.stringify(countries.map(item => item.symbolAndName)) });
+// add to list
+app.post('/add', async (req, res) => {
+  const userId = req.user.id; // Assuming user ID is available in the request object
+  const symbol = req.body.add; // Retrieve symbol from the form data
+
+  try {
+    const checkQuery = 'SELECT COUNT(*) AS count FROM favorite_stocks WHERE user_id = $1 AND symbol = $2';
+    const checkResult = await db.query(checkQuery, [userId, symbol]);
+
+    if (checkResult.rows[0].count > 0) {
+      // Symbol already exists for the user
+      res.render('success.ejs', { userId: userId, symbol: symbol, message: 'Symbol already exists for the user.' });
+    } else {
+      const insertQuery = 'INSERT INTO favorite_stocks (user_id, symbol) VALUES ($1, $2) RETURNING *';
+      const values = [userId, symbol];
+      const result = await db.query(insertQuery, values);
+      
+      res.render('success.ejs', { userId: userId, symbol: symbol, message: '' });
+    }
+  } catch (error) {
+    console.error('Error adding symbol:', error);
+    res.render('success.ejs', { message: 'Error adding symbol' });
+  }
 });
 
 
+// get stock list
+// Route to view the stock list
+app.get('/stocklist', async (req, res) => {
+  try {
+    const userId = req.user.id; // Assuming user ID is available in the request object
+    const query = 'SELECT * FROM favorite_stocks WHERE user_id = $1'; // Adjust this query based on your actual database schema
+    const { rows } = await db.query(query, [userId]);
+
+    res.render('stocklist.ejs', { stocks: rows });
+  } catch (error) {
+    console.error('Error fetching stock list:', error);
+    res.render('error.ejs', { message: 'Error fetching stock list' });
+  }
+});
+
+
+// search symbol or company name
+app.get("/search", (req, res) => {
+  res.render('search', { countries: JSON.stringify(countries.map(item => item.symbolAndName)) });
+});
 // search statement
 app.get("/sestate", (req, res) => {
   res.render('state', { countries: JSON.stringify(countries.map(item => item.symbolAndName)) });
@@ -316,6 +357,8 @@ app.get("/logout", (req, res) => {
 
 app.get("/secrets", (req, res) => {
   if (req.isAuthenticated()) {
+    const userId = req.user.id; // Get the user ID from the request object
+    // Use the userId for further operations
     res.render("secrets.ejs");
   } else {
     res.redirect("/login");
@@ -367,6 +410,10 @@ app.post("/register", async (req, res) => {
           );
           const user = result.rows[0];
           req.login(user, (err) => {
+            req.user = {
+              id: user.id, // Set the user ID in the request object
+              // Other user properties
+            };
             console.log("success");
             res.redirect("/secrets");
           });
@@ -394,6 +441,7 @@ passport.use(
             return cb(err);
           } else {
             if (valid) {
+              req.user = { id: user.id, /* Other user properties */ }; // Set the user ID in the request object
               return cb(null, user);
             } else {
               return cb(null, false);
@@ -429,6 +477,7 @@ passport.use(
             "INSERT INTO users (email, password) VALUES ($1, $2)",
             [profile.email, "google"]
           );
+          req.user = { id: newUser.rows[0].id, /* Other user properties */ }; // Set the user ID in the request object
           return cb(null, newUser.rows[0]);
         } else {
           return cb(null, result.rows[0]);

@@ -1,0 +1,23 @@
+<%- include("partials/header.ejs") %>
+
+<img
+  class="profile"
+  src="images/logo222.png"
+  style="background-color: black"
+  alt="cat profile"
+/>
+
+    
+<h1>Result Page</h1>
+    
+<% if (message) { %>
+    <p><%= message %></p>
+<% } else { %>
+    <p>Symbol successfully added to favorite stocks!</p>
+    <p>User ID: <%= userId %></p>
+    <p>Favorite Symbol: <%= symbol %></p>
+<% } %>
+
+<a href="/secrets">Add Another Symbol</a> or <a href="/stocklist">View for List</a>
+
+<%- include("partials/footer.ejs") %>

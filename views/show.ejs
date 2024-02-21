@@ -5,7 +5,6 @@
   <form id="refreshForm" method="POST" action='/refresh?symbol=<%=symbol%>' class="button-container">
     <button type="submit" name="refresh" value="<%=symbol%>">Refresh</button>
   </form>
-  
 
   <div class="response-area">
     <% if (content && content.symbol) { %>
@@ -69,8 +68,6 @@
           <%= content.change_percent || 'N/A' %>
         </div>
       </div>
-
-  
 
     <% } else { %>
       <% if (content && content === "Error!") { %>

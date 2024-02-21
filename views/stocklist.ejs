@@ -1,0 +1,22 @@
+<%- include("partials/header.ejs") %>
+
+<img
+  class="profile"
+  src="images/logo222.png"
+  style="background-color: black"
+  alt="cat profile"
+/>
+
+    
+<body>
+  <h1>Stock List</h1>
+  
+  <ul>
+      <% stocks.forEach(stock => { %>
+          <li>User ID: <%= stock.user_id %>, Symbol: <%= stock.symbol %></li>
+      <% }); %>
+  </ul>
+
+  <a href="/">Back to Home</a>
+
+<%- include("partials/footer.ejs") %>

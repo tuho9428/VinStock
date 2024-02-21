@@ -7,8 +7,6 @@
     <%= timeSerie %>
   </div>
 
-<div id="clickedButtonInfo"></div>
-
 <!-- Add the canvas element for the line chart -->
 <canvas id="lineChart"></canvas>
 
@@ -19,6 +17,10 @@
   <button type="submit" name="monthlyPrice" value="Get Monthly Price" onclick="displayClickedButton(this)">Monthly</button>
   <button type="submit" name="companyOverview" value="Get Company Overview" onclick="displayClickedButton(this)">Company Overview</button>
   <button type="submit" name="incomeStatement" value="Get Income Statement" onclick="displayClickedButton(this)">Income Statement</button>
+</form>
+
+<form id="addForm" method="POST" action='/add?symbol=<%=symbol%>' class="button-container">
+  <button type="submit" name="add" value="<%=symbol%>">Add to List</button>
 </form>
 
 <div class="response-area">
