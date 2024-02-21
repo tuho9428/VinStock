@@ -441,8 +441,8 @@ passport.use(
             return cb(err);
           } else {
             if (valid) {
-              req.user = { id: user.id, /* Other user properties */ }; // Set the user ID in the request object
-              return cb(null, user);
+              // return cb(null, user);
+              return cb(null, { id: user.id, /* Other user properties */ });
             } else {
               return cb(null, false);
             }
