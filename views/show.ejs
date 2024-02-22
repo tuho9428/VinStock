@@ -88,7 +88,6 @@
 </form>
 
   <div class="response-area">
-    <div>
     <% if (content && content.symbol) { %>
       <div>
         <label for="symbol">Symbol:</label>
@@ -120,8 +119,6 @@
           <%= content.current_price || 'N/A' %>
         </div>
       </div>
-    </div>
-    <div>
       <div>
         <label for="volume">Volume:</label>
         <div id="volume">
@@ -152,8 +149,7 @@
           <%= content.change_percent || 'N/A' %>
         </div>
       </div>
-    </div>
-    
+
     <% } else { %>
       <% if (content && content === "Error!") { %>
         <p>Error fetching stock price data for <%= symbol %>.</p>
