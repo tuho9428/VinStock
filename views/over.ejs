@@ -7,6 +7,8 @@
     <title>Home</title>
     <link rel="stylesheet" href="/styles/vinpage.css" media="screen">
     <link rel="stylesheet" href="/styles/styles.css">
+    <link rel="stylesheet" href="/styles/Submit.css">
+    
     <script class="u-script" type="text/javascript" src="/scripts/jquery.js" defer=""></script>
     <script class="u-script" type="text/javascript" src="/scripts/vinpage.js" defer=""></script>
     <meta name="referrer" content="origin">
@@ -70,15 +72,19 @@
         </nav>
       </div></header>
 
-<h2>Company Overview Search</h2>
+      <div class="centered-container">
+        <div class="container-inner">
+          <h2>Company Overview Search</h2>
+          <p>Start typing:</p>
+        </div>
+      </div>
 
-<p>Start typing:</p>
 <!--Make sure the form has the autocomplete function switched off:-->
 <form id="searchForm" autocomplete="off" action="/overview" method="GET">
   <div class="autocomplete" style="width:300px;">
     <input id="myInput" type="text" name="myCountry" placeholder="Symbol or Comapny Name">
   </div>
-  <input id="submitBtn" type="submit" style="color: brown;">
+  <input id="submitBtn" type="submit" style="color: rgb(253, 251, 251);">
 </form>
 
 <script>
