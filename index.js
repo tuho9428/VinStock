@@ -350,6 +350,10 @@ app.get("/secrets", (req, res) => {
   res.render("secrets.ejs");
 });
 
+app.get("/service", (req, res) => {
+  res.render("works.ejs");
+});
+
 app.get("/logout", (req, res) => {
   req.logout(function (err) {
     if (err) {
