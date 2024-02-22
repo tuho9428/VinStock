@@ -15,6 +15,7 @@ import DataManager from './public/scripts/dataManager.js';
 import StockData from './public/scripts/stockData.js';
 import StockDataManager from './public/scripts/stockDataManager.js';
 import DataProcessor from './public/scripts/dataProcessor.js';
+import User from './public/scripts/user.js';
 
 
 const app = express();
@@ -101,6 +102,7 @@ const dataManager = new DataManager(API_URL, process.env.RAPIDAPI_KEY);
 app.get("/search", (req, res) => {
   res.render('search', { countries: JSON.stringify(searchManager.getSymbolAndNames()) });
 });
+
 // search statement
 app.get("/sestate", (req, res) => {
   res.render('state', { countries: JSON.stringify(searchManager.getSymbolAndNames()) });
@@ -317,22 +319,24 @@ app.post(
 app.post("/register", async (req, res) => {
   const email = req.body.username;
   const password = req.body.password;
+  
+  const newUser = new User(email,password);
 
   try {
     const checkResult = await db.query("SELECT * FROM users WHERE email = $1", [
-      email,
+      newUser.email,
     ]);
 
     if (checkResult.rows.length > 0) {
       req.redirect("/login");
     } else {
-      bcrypt.hash(password, saltRounds, async (err, hash) => {
+      bcrypt.hash(newUser.password, saltRounds, async (err, hash) => {
         if (err) {
           console.error("Error hashing password:", err);
         } else {
           const result = await db.query(
             "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING *",
-            [email, hash]
+            [newUser.email, hash]
           );
           const user = result.rows[0];
           req.login(user, (err) => {
