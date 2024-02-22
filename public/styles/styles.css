@@ -59,3 +59,60 @@ button[name="incomeStatement"]:hover {
 .container-inner {
   text-align: center;
 }
+
+.response-area {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between; /* Ensure even spacing between items */
+  margin-top: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.response-area div {
+  text-align: left;
+  flex-basis: calc(50% - 10px); /* 50% width with 10px gap in between */
+}
+
+.response-area label {
+  font-weight: bold;
+  color: #333;
+}
+
+.response-area div[id^="symbol"],
+.response-area div[id^="openPrice"],
+.response-area div[id^="highPrice"],
+.response-area div[id^="lowPrice"],
+.response-area div[id^="currentPrice"],
+.response-area div[id^="volume"],
+.response-area div[id^="latestTradingDay"],
+.response-area div[id^="previousClose"],
+.response-area div[id^="change"],
+.response-area div[id^="changePercent"] {
+  font-weight: bold;
+  color: #4CAF50; /* Green for positive values */
+}
+
+.response-area div[id^="changePercent"][data-negative="true"] {
+  color: #e74c3c; /* Red for negative values */
+}
+
+.response-area p {
+  color: #e74c3c;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.u-footer {
+  margin-top: auto;
+}
