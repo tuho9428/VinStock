@@ -6,8 +6,6 @@
     <meta name="description" content="">
     <title>Home</title>
     <link rel="stylesheet" href="/styles/vinpage.css" media="screen">
-    <link rel="stylesheet" href="/styles/layout.css">
-    <link rel="stylesheet" href="/styles/content.css">
     <link rel="stylesheet" href="/styles/styles.css">
     
     <script class="u-script" type="text/javascript" src="/scripts/jquery.js" defer=""></script>
@@ -74,7 +72,11 @@
         </nav>
       </div></header>
 
-<h2><%= symbol %></h2>
+      <div class="centered-container">
+        <div class="container-inner">
+          <h2><%= symbol %></h2>
+        </div>
+      </div> 
 <div>
   <form id="refreshForm" method="POST" action='/refresh?symbol=<%=symbol%>' class="button-container">
     <button type="submit" name="refresh" value="<%=symbol%>">Refresh</button>
