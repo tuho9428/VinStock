@@ -274,6 +274,10 @@ app.get("/register", (req, res) => {
   res.render("register.ejs");
 });
 
+app.get("/secrets", (req, res) => {
+  res.render("secrets.ejs");
+});
+
 app.get("/logout", (req, res) => {
   req.logout(function (err) {
     if (err) {
