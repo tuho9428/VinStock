@@ -68,16 +68,14 @@ app.post('/add', async (req, res) => {
   res.render('success.ejs', result);
 });
 
-
-// get stock list
 // Route to view the stock list
+// "/stocklist" route using stockManager
 app.get('/stocklist', async (req, res) => {
-  try {
-    const userId = req.user.id; // Assuming user ID is available in the request object
-    const query = 'SELECT * FROM favorite_stocks WHERE user_id = $1'; // Adjust this query based on your actual database schema
-    const { rows } = await db.query(query, [userId]);
+  const userId = req.user.id; // Assuming user ID is available in the request object
 
-    res.render('stocklist.ejs', { stocks: rows });
+  try {
+    const stocks = await stockManager.getStockList(userId);
+    res.render('stocklist.ejs', { stocks });
   } catch (error) {
     console.error('Error fetching stock list:', error);
     res.render('error.ejs', { message: 'Error fetching stock list' });

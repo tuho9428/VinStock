@@ -24,6 +24,18 @@ class StockManager {
         return { message: 'Error adding symbol' };
       }
     }
+
+    async getStockList(userId) {
+      try {
+        const query = 'SELECT * FROM favorite_stocks WHERE user_id = $1'; // Adjust this query based on your actual database schema
+        const { rows } = await this.db.query(query, [userId]);
+        return rows;
+      } catch (error) {
+        console.error('Error fetching stock list:', error);
+        throw new Error('Error fetching stock list');
+      }
+    }
+    
   }
 
   export default StockManager;
