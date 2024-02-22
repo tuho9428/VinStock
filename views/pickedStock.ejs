@@ -7,8 +7,6 @@
     <meta name="description" content="">
     <title>Home</title>
     <link rel="stylesheet" href="/styles/vinpage.css" media="screen">
-    <link rel="stylesheet" href="/styles/layout.css">
-    <link rel="stylesheet" href="/styles/content.css">
     <link rel="stylesheet" href="/styles/styles.css">
     <script class="u-script" type="text/javascript" src="/scripts/jquery.js" defer=""></script>
     <script class="u-script" type="text/javascript" src="/scripts/vinpage.js" defer=""></script>
@@ -77,17 +75,23 @@
         </nav>
       </div></header>
 
-<div>
-<h2><%= symbol %></h2>
-<div>
-  <label for="timeSerie">Time Serie:</label>
-  <div id="timeSerie">
-    <%= timeSerie %>
-  </div>
+      <div class="centered-container">
+        <div class="container-inner">
+          <h2><%= symbol %></h2>
+          <div>
+            <label for="timeSerie">Time Serie:</label>
+            <div id="timeSerie">
+              <%= timeSerie %>
+            </div>
+          </div>
+        </div>
+      </div>
 
 <!-- Add the div element for the Google Candlestick Chart -->
-<div style="max-width: 900px;">
-<div id="googleCandlestickChart" style="width: 850px; height: 500px;"></div>
+<div class="centered-container">
+  <div class="container-inner">
+    <div id="googleCandlestickChart"></div>
+  </div>
 </div>
 
 <form id="myForm" method="post" action='/result?symbol=<%=symbol%>' class="button-container">
