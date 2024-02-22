@@ -211,7 +211,7 @@ const stockPricesManager = new DataManager(API_URL, process.env.RAPIDAPI_KEY);
 app.get('/result', async (req, res) => {
   try {
     const pickedSymbol = req.query.symbol;
-    const content = await stockPricesManager.fetchStockPrices(pickedSymbol, 'TIME_SERIES_INTRADAY');
+    const content = await stockPricesManager.fetchStockPrices(pickedSymbol, 'TIME_SERIES_DAILY');
     
     res.render('pickedStock.ejs', { content: content.content, symbol: pickedSymbol, timeSerie: content.timeSerie }); // Include timeSerie in the content object
   } catch (error) {

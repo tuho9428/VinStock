@@ -30,3 +30,12 @@ to install npm packages.
 Run 
 nodemon index.js
 
+RAPIDAPI_KEY=d5099a6c99msh0a4a0cf7bff83fep15b7aejsn7a903883c8f3
+GOOGLE_CLIENT_ID="73689078252-rsrj28nt39gs0vap0k7aa1f75a4os8pa.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET="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"
+SESSION_SECRET="TOPSECRETWORD"
+PG_USER="postgres"
+PG_HOST="localhost"
+PG_DATABASE="CS480"
+PG_PASSWORD="hatdaudo220997"
+PG_PORT="5432"
