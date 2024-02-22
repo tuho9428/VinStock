@@ -10,7 +10,7 @@
 <!-- Add the canvas element for the line chart -->
 <canvas id="lineChart"></canvas>
 
-<form id="myForm" method="post" action='/result' class="button-container">
+<form id="myForm" method="post" action='/result?symbol=<%=symbol%>' class="button-container">
   <button type="submit" name="dailyPrice" value="Get Daily Price" onclick="displayClickedButton(this)">Daily</button>
   <button type="submit" name="intradayPrice" value="Get Intraday Price" onclick="displayClickedButton(this)">Intraday</button>
   <button type="submit" name="weeklyPrice" value="Get Weekly Price" onclick="displayClickedButton(this)">Weekly</button>
@@ -68,6 +68,7 @@
 
     <!-- Add the JavaScript code to render the line chart -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
       // Step 5: Extract necessary data points for the line chart
       const labels = [];

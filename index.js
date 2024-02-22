@@ -14,6 +14,8 @@ import dotenv from 'dotenv';
 import StockManager from './public/scripts/stockManager.js'; // Importing StockManager class from stockManager.js
 import SearchManager from './public/scripts/searchManager.js';
 import DataManager from './public/scripts/dataManager.js';
+import StockData from './public/scripts/stockData.js';
+import StockDataManager from './public/scripts/stockDataManager.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -131,13 +133,12 @@ app.get("/overview", async (req, res) => {
   }
 });
 
+// Implementing Object-Oriented Programming for managing stock data
+const stockDataManager = new StockDataManager(db);
+
 // show list stock and refresh
 app.post('/refresh', async (req, res) => {
-  let pickedSymbol = req.query.symbol; // Retrieve symbol from URL query parameter
-
-  if (!pickedSymbol) {
-    pickedSymbol = req.body.refresh; // Retrieve symbol from form data if not in query parameter
-  } // Assuming symbol is sent in the request body
+  let pickedSymbol = req.query.symbol || req.body.refresh;
 
   try {
     const config = {
@@ -156,60 +157,24 @@ app.post('/refresh', async (req, res) => {
 
     const response = await axios.request(config);
     const data = response.data;
-
     const globalQuoteData = data['Global Quote'];
 
-    const stockData = {
-      symbol: globalQuoteData['01. symbol'],
-      open_price: parseFloat(globalQuoteData['02. open']),
-      high_price: parseFloat(globalQuoteData['03. high']),
-      low_price: parseFloat(globalQuoteData['04. low']),
-      current_price: parseFloat(globalQuoteData['05. price']),
-      volume: parseInt(globalQuoteData['06. volume']),
-      last_trading_day: new Date(globalQuoteData['07. latest trading day']),
-      previous_close: parseFloat(globalQuoteData['08. previous close']),
-      change_amount: parseFloat(globalQuoteData['09. change']),
-      change_percent: parseFloat(globalQuoteData['10. change percent'])
-    };
+    const stockData = new StockData(
+      globalQuoteData['01. symbol'],
+      parseFloat(globalQuoteData['02. open']),
+      parseFloat(globalQuoteData['03. high']),
+      parseFloat(globalQuoteData['04. low']),
+      parseFloat(globalQuoteData['05. price']),
+      parseInt(globalQuoteData['06. volume']),
+      new Date(globalQuoteData['07. latest trading day']),
+      parseFloat(globalQuoteData['08. previous close']),
+      parseFloat(globalQuoteData['09. change']),
+      parseFloat(globalQuoteData['10. change percent'])
+    );
 
-    const queryCheck = `SELECT * FROM stock_data WHERE symbol = $1`;
-    const checkResult = await db.query(queryCheck, [stockData.symbol]);
+    await stockDataManager.updateStockData(stockData);
 
-    if (checkResult.rows.length > 0) {
-      const updateQuery = `UPDATE stock_data 
-                           SET symbol = $1, open_price = $2, high_price = $3, low_price = $4, current_price = $5, volume = $6,
-                               last_trading_day = $7, previous_close = $8, change_amount = $9, change_percent = $10
-                           WHERE symbol = $1`;
-      await db.query(updateQuery, [
-        stockData.symbol,
-        stockData.open_price,
-        stockData.high_price,
-        stockData.low_price,
-        stockData.current_price,
-        stockData.volume,
-        stockData.last_trading_day,
-        stockData.previous_close,
-        stockData.change_amount,
-        stockData.change_percent
-      ]);
-    } else {
-      const insertQuery = `INSERT INTO stock_data (symbol, open_price, high_price, low_price, current_price, volume, last_trading_day, previous_close, change_amount, change_percent) 
-                           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`;
-      await db.query(insertQuery, [
-        stockData.symbol,
-        stockData.open_price,
-        stockData.high_price,
-        stockData.low_price,
-        stockData.current_price,
-        stockData.volume,
-        stockData.last_trading_day,
-        stockData.previous_close,
-        stockData.change_amount,
-        stockData.change_percent
-      ]);
-    }
-
-    res.redirect(`/show?symbol=${pickedSymbol}`); // Redirect to show route after inserting or updating data
+    res.redirect(`/show?symbol=${pickedSymbol}`);
   } catch (error) {
     console.error('Error in /refresh route:', error);
     res.render('show.ejs', { content: 'Error!', symbol: pickedSymbol });
@@ -220,11 +185,9 @@ app.get('/show', async (req, res) => {
   const pickedSymbol = req.query.symbol;
 
   try {
-    const query = 'SELECT * FROM stock_data WHERE symbol = $1';
-    const { rows } = await db.query(query, [pickedSymbol]);
+    const stockData = await stockDataManager.getStockData(pickedSymbol);
 
-    if (rows.length > 0) {
-      const stockData = rows[0];
+    if (stockData) {
       res.render('show.ejs', { content: stockData, symbol: pickedSymbol });
     } else {
       res.render('show.ejs', { content: null, symbol: pickedSymbol });
@@ -235,54 +198,16 @@ app.get('/show', async (req, res) => {
   }
 });
 
+// Implementing Object-Oriented Programming for managing stock data and fetching prices
+const stockPricesManager = new DataManager(API_URL, process.env.RAPIDAPI_KEY);
 
 // get result from search
 app.get('/result', async (req, res) => {
-  pickedSymbol = req.query.symbol;
-
   try {
-    let config = {
-      method: 'GET',
-      url: API_URL + '/query',
-      params: {
-        interval: '5min',
-        function: 'TIME_SERIES_INTRADAY',
-        symbol: pickedSymbol,
-        datatype: 'json',
-        output_size: 'compact'
-      },
-      headers: {
-        'x-rapidapi-host': 'alpha-vantage.p.rapidapi.com',
-        'x-rapidapi-key': process.env.RAPIDAPI_KEY
-      }
-    };
-
-    const response = await axios.request(config);
-    const data = response.data;
-
-    // Access and format the required information from the response data
-    const timeSeries = data['Time Series (5min)'];
-
-    // Construct the prices array to pass to the template
-    const prices = [];
-    const stockSymbol = pickedSymbol;
-
-    for (const timestamp in timeSeries) {
-      if (timeSeries.hasOwnProperty(timestamp)) {
-        const entry = timeSeries[timestamp];
-        const price = {
-          timestamp: timestamp,
-          openPrice: entry['1. open'],
-          highPrice: entry['2. high'],
-          lowPrice: entry['3. low'],
-          closePrice: entry['4. close'],
-          volume: entry['5. volume'],
-        };
-        prices.push(price);
-      }
-    }
-
-    res.render('pickedStock.ejs', { content: prices, symbol: stockSymbol, timeSerie: "INTRADAY" });
+    const pickedSymbol = req.query.symbol;
+    const content = await stockPricesManager.fetchStockPrices(pickedSymbol, 'TIME_SERIES_INTRADAY');
+    
+    res.render('pickedStock.ejs', { content: content.content, symbol: pickedSymbol, timeSerie: content.timeSerie }); // Include timeSerie in the content object
   } catch (error) {
     console.error('Error in /result route:', error);
     res.render('pickedStock.ejs', { content: 'Error!', symbol: pickedSymbol });
@@ -292,26 +217,26 @@ app.get('/result', async (req, res) => {
 app.post('/result', async (req, res) => {
   try {
     let content;
-    let symbol = pickedSymbol;
+    const symbol = req.query.symbol || req.body.symbol;
 
     if (req.body.companyOverview) {
-      content = await fetchCompanyOverview(symbol);
+      content = await dataManager.fetchFinancialData(symbol, 'OVERVIEW');
       res.render('overview.ejs', content);
     } else if (req.body.dailyPrice) {
-      content = await fetchStockPrices(symbol, 'TIME_SERIES_DAILY');
+      content = await stockPricesManager.fetchStockPrices(symbol, 'TIME_SERIES_DAILY');
     } else if (req.body.intradayPrice) {
-      content = await fetchStockPrices(symbol, 'TIME_SERIES_INTRADAY');
+      content = await stockPricesManager.fetchStockPrices(symbol, 'TIME_SERIES_INTRADAY');
     } else if (req.body.weeklyPrice) {
-      content = await fetchStockPrices(symbol, 'TIME_SERIES_WEEKLY');
+      content = await stockPricesManager.fetchStockPrices(symbol, 'TIME_SERIES_WEEKLY');
     } else if (req.body.monthlyPrice) {
-      content = await fetchStockPrices(symbol, 'TIME_SERIES_MONTHLY');
+      content = await stockPricesManager.fetchStockPrices(symbol, 'TIME_SERIES_MONTHLY');
     } else if (req.body.incomeStatement) {
-      content = await fetchIncomeStatement(symbol);
+      content = await dataManager.fetchFinancialData(symbol, 'INCOME_STATEMENT');
       res.render('statement.ejs', content);
     }
 
     if (!req.body.companyOverview && !req.body.incomeStatement) {
-      res.render('pickedStock.ejs', content);
+      res.render('pickedStock.ejs', content); // Include timeSerie in the content object
     }
   } catch (error) {
     console.error('Error in /result POST route:', error);
@@ -497,59 +422,6 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// Fetch stock prices based on time series function
-async function fetchStockPrices(symbol, timeSeriesFunction) {
-  try {
-    const config = {
-      method: 'GET',
-      url: API_URL + '/query',
-      params: {
-        function: timeSeriesFunction,
-        symbol: symbol,
-        ...(timeSeriesFunction === 'TIME_SERIES_INTRADAY' && { interval: '5min' }),
-        datatype: 'json',
-      },
-      headers: {
-        'x-rapidapi-host': 'alpha-vantage.p.rapidapi.com',
-        'x-rapidapi-key': process.env.RAPIDAPI_KEY
-      },
-    };
-
-    const response = await axios.request(config);
-    const data = response.data;
-
-    // Access and format the required information from the response data
-    const metaData = data['Meta Data'];
-    const timeSeries = data[timeSeriesFunction === 'TIME_SERIES_INTRADAY' ? 'Time Series (5min)' :
-      timeSeriesFunction === 'TIME_SERIES_DAILY' ? 'Time Series (Daily)' :
-        timeSeriesFunction === 'TIME_SERIES_WEEKLY' ? 'Weekly Time Series' :
-          timeSeriesFunction === 'TIME_SERIES_MONTHLY' ? 'Monthly Time Series' : undefined];
-
-    // Construct the prices array to pass to the template
-    const prices = [];
-    const stockSymbol = symbol;
-
-    for (const timestamp in timeSeries) {
-      if (timeSeries.hasOwnProperty(timestamp)) {
-        const entry = timeSeries[timestamp];
-        const price = {
-          timestamp: timestamp,
-          openPrice: entry['1. open'],
-          highPrice: entry['2. high'],
-          lowPrice: entry['3. low'],
-          closePrice: entry['4. close'],
-          volume: entry['5. volume'],
-        };
-        prices.push(price);
-      }
-    }
-    const timeSerie = timeSeriesFunction.substring('TIME_SERIES_'.length);
-    return { content: prices, symbol: stockSymbol, timeSerie: timeSerie };
-  } catch (error) {
-    console.error('Error in fetchStockPrices:', error);
-    throw new Error('Failed to fetch stock prices.');
-  }
-}
 
 fs.createReadStream('./public/scripts/stocks_name_latest.csv')
   .pipe(csv())

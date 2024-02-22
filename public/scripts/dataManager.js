@@ -1,4 +1,5 @@
 import axios from 'axios';
+import StockPrices from './stockPrices.js';
 
 // DataManager class to handle data fetching and processing
 class DataManager {
@@ -56,6 +57,60 @@ class DataManager {
     // Modify this part based on the actual structure of the Income Statement data
     return { content: data, symbol: symbol, timeSerie: "Income Statement" };
   }
+
+
+  // DataManager for managing stock data
+  async fetchStockPrices(symbol, timeSeriesFunction) {
+    try {
+      const config = {
+        method: 'GET',
+        url: this.apiUrl + '/query',
+        params: {
+          function: timeSeriesFunction,
+          symbol: symbol,
+          ...(timeSeriesFunction === 'TIME_SERIES_INTRADAY' && { interval: '5min' }),
+          datatype: 'json',
+        },
+        headers: {
+          'x-rapidapi-host': 'alpha-vantage.p.rapidapi.com',
+          'x-rapidapi-key': this.rapidapiKey
+        },
+      };
+
+      const response = await axios.request(config);
+      const data = response.data;
+
+      const timeSeries = data[timeSeriesFunction === 'TIME_SERIES_INTRADAY' ? 'Time Series (5min)' :
+        timeSeriesFunction === 'TIME_SERIES_DAILY' ? 'Time Series (Daily)' :
+          timeSeriesFunction === 'TIME_SERIES_WEEKLY' ? 'Weekly Time Series' :
+            timeSeriesFunction === 'TIME_SERIES_MONTHLY' ? 'Monthly Time Series' : undefined];
+
+      const prices = [];
+      const stockSymbol = symbol;
+      const timeSerie = timeSeriesFunction.substring('TIME_SERIES_'.length);
+
+      for (const timestamp in timeSeries) {
+        if (timeSeries.hasOwnProperty(timestamp)) {
+          const entry = timeSeries[timestamp];
+          const price = new StockPrices(
+            timestamp,
+            entry['1. open'],
+            entry['2. high'],
+            entry['3. low'],
+            entry['4. close'],
+            entry['5. volume']
+          );
+          prices.push(price);
+        }
+      }
+      
+      return { content: prices, symbol: stockSymbol, timeSerie: timeSerie };
+    } catch (error) {
+      console.error('Error in fetchStockPrices:', error);
+      throw new Error('Failed to fetch stock prices.');
+    }
+  }
+
 }
 
   export default DataManager;
