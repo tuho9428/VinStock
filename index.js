@@ -12,6 +12,7 @@ import fs from 'fs';
 import csv from 'csv-parser';
 import dotenv from 'dotenv';
 import StockManager from './public/scripts/stockManager.js'; // Importing StockManager class from stockManager.js
+import SearchManager from './public/scripts/searchManager.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -83,13 +84,16 @@ app.get('/stocklist', async (req, res) => {
 });
 
 
+// Instantiate SearchManager with countries data
+const searchManager = new SearchManager(countries);
+
 // search symbol or company name
 app.get("/search", (req, res) => {
-  res.render('search', { countries: JSON.stringify(countries.map(item => item.symbolAndName)) });
+  res.render('search', { countries: JSON.stringify(searchManager.getSymbolAndNames()) });
 });
 // search statement
 app.get("/sestate", (req, res) => {
-  res.render('state', { countries: JSON.stringify(countries.map(item => item.symbolAndName)) });
+  res.render('state', { countries: JSON.stringify(searchManager.getSymbolAndNames()) });
 });
 
 app.get("/statement", async (req, res) => {
@@ -107,7 +111,7 @@ app.get("/statement", async (req, res) => {
 
 // search company overview
 app.get("/seover", (req, res) => {
-  res.render('over', { countries: JSON.stringify(countries.map(item => item.symbolAndName)) });
+  res.render('over', { countries: JSON.stringify(searchManager.getSymbolAndNames()) });
 });
 
 app.get("/overview", async (req, res) => {
