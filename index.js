@@ -271,7 +271,11 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  res.render("register.ejs");
+  res.render("register.ejs", {error: ""});
+});
+
+app.get("/service", (req, res) => {
+  res.render("works.ejs");
 });
 
 app.get("/logout", (req, res) => {
@@ -352,7 +356,9 @@ app.post("/register", async (req, res) => {
     }
   } catch (err) {
     console.log(err);
+    res.render('register.ejs', { error: `${newUser.email} is already exists` });
   }
+  
 });
 
 passport.use(
