@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html style="font-size: 16px;" lang="en"><head>
+<html style="font-size: 16px;" lang="en">
+<head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <meta name="keywords" content="Billionaires Peter Thiel and Alan Howard back new $10bn crypto exchange">
@@ -26,8 +27,12 @@
     <meta property="og:title" content="Home">
     <meta property="og:description" content="">
     <meta property="og:type" content="website">
-  <meta data-intl-tel-input-cdn-path="intlTelInput/"></head>
-  <body data-path-to-root="./" data-include-products="false" class="u-body u-xl-mode" data-lang="en"><header class="u-black u-clearfix u-header u-header" id="sec-35cf"><div class="u-clearfix u-sheet u-sheet-1">
+  <meta data-intl-tel-input-cdn-path="intlTelInput/">
+</head>
+
+<body data-path-to-root="./" data-include-products="false" class="u-body u-xl-mode" data-lang="en" style="overflow-y: scroll;">
+
+  <header class="u-black u-clearfix u-header u-header" id="sec-35cf"><div class="u-clearfix u-sheet u-sheet-1">
         <a href="/" class="u-image u-logo u-image-1" title="logo" data-image-width="640" data-image-height="832">
           <img src="images/logo222.png" class="u-logo-image u-logo-image-1">
         </a>
@@ -80,7 +85,9 @@
   </div>
 
 <!-- Add the canvas element for the line chart -->
+<div style="max-width: 900px;">
 <canvas id="lineChart"></canvas>
+</div>
 
 <form id="myForm" method="post" action='/result?symbol=<%=symbol%>' class="button-container">
   <button type="submit" name="dailyPrice" value="Get Daily Price" onclick="displayClickedButton(this)">Daily</button>
@@ -210,6 +217,9 @@
 
 <footer class="u-align-center u-clearfix u-footer u-grey-80 u-footer" id="sec-6f38"><div class="u-clearfix u-sheet u-sheet-1">
   <p class="u-small-text u-text u-text-variant u-text-1">Copyright</p>
-</div></footer>
+</div>
+</footer>
 
-</body></html>
+</body>
+
+</html>
