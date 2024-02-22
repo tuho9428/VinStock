@@ -1,19 +1,15 @@
 <%- include("partials/header.ejs") %>
 
-<img
-  class="profile"
-  src="images/logo222.png"
-  style="background-color: black"
-  alt="cat profile"
-/>
-
-    
 <body>
   <h1>Stock List</h1>
   
   <ul>
       <% stocks.forEach(stock => { %>
           <li>User ID: <%= stock.user_id %>, Symbol: <%= stock.symbol %></li>
+          <form action="/result" method="GET">
+              <input type="hidden" name="symbol" value="<%= stock.symbol %>">
+              <button type="submit">View <%= stock.symbol %> Details</button>
+          </form>
       <% }); %>
   </ul>
 
