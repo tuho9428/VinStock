@@ -6,9 +6,8 @@
     <meta name="description" content="">
     <title>Home</title>
     <link rel="stylesheet" href="/styles/vinpage.css" media="screen">
-    <link rel="stylesheet" href="/styles/layout.css">
-    <link rel="stylesheet" href="/styles/content.css">
     <link rel="stylesheet" href="/styles/styles.css">
+    <link rel="stylesheet" href="/styles/favorite.css">
     <script class="u-script" type="text/javascript" src="/scripts/jquery.js" defer=""></script>
     <script class="u-script" type="text/javascript" src="/scripts/vinpage.js" defer=""></script>
     <meta name="referrer" content="origin">
@@ -79,11 +78,13 @@
   style="background-color: black"
   alt="cat profile"
 />
+
+<div class="content">
   <h1>Stock List</h1>
   
-  <ul>
+  <ul class="stock-list">
       <% stocks.forEach(stock => { %>
-          <li>User ID: <%= stock.user_id %>, Symbol: <%= stock.symbol %></li>
+          <li class="stock-list-item">User ID: <%= stock.user_id %>, Symbol: <%= stock.symbol %></li>
           <form action="/result" method="GET">
               <input type="hidden" name="symbol" value="<%= stock.symbol %>">
               <button type="submit">View <%= stock.symbol %> Details</button>
@@ -92,6 +93,8 @@
   </ul>
 
   <a href="/secrets">Back to User Dashboard</a>
+</div>
+
 
   <footer class="u-align-center u-clearfix u-footer u-grey-80 u-footer" id="sec-6f38"><div class="u-clearfix u-sheet u-sheet-1">
     <p class="u-small-text u-text u-text-variant u-text-1">Copyright</p>

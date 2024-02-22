@@ -267,3 +267,14 @@ h2 {
   max-height: 200px; /* Adjust the max-height value as needed */
   overflow-y: auto;
 }
+
+/* Style for the profile image */
+.profile {
+  width: 200px; /* Set your preferred width */
+  height:  200px; /* Maintain aspect ratio */
+  border-radius: 50%; /* Create a circular shape */
+  background-color: black; /* Background color behind the image */
+  border: 3px solid #fff; /* White border around the image */
+  display: block; /* Ensure proper spacing and centering */
+  margin: 0 auto; /* Center the image */
+}
