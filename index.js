@@ -8,14 +8,14 @@ import GoogleStrategy from "passport-google-oauth2";
 import session from "express-session";
 import methodOverride from "method-override";
 import axios from "axios";
-import fs from 'fs';
-import csv from 'csv-parser';
 import dotenv from 'dotenv';
 import StockManager from './public/scripts/stockManager.js'; // Importing StockManager class from stockManager.js
 import SearchManager from './public/scripts/searchManager.js';
 import DataManager from './public/scripts/dataManager.js';
 import StockData from './public/scripts/stockData.js';
 import StockDataManager from './public/scripts/stockDataManager.js';
+import DataProcessor from './public/scripts/dataProcessor.js';
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -50,7 +50,11 @@ const db = new pg.Client({
 
 db.connect();
 
-let countries = [];
+const dataProcessor = new DataProcessor('./public/scripts/stocks_name_latest.csv');
+dataProcessor.processCSVFile();
+// Accessing the countries array data
+const countries = dataProcessor.getData();
+
 
 app.get("/", (req, res) => {
   res.render("index.ejs");
@@ -421,13 +425,3 @@ passport.deserializeUser((user, cb) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
-
-fs.createReadStream('./public/scripts/stocks_name_latest.csv')
-  .pipe(csv())
-  .on('data', (row) => {
-    countries.push(row);
-  })
-  .on('end', () => {
-    console.log('CSV file successfully processed');
-  });
