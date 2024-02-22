@@ -8,9 +8,15 @@ import GoogleStrategy from "passport-google-oauth2";
 import session from "express-session";
 import methodOverride from "method-override";
 import axios from "axios";
-import fs from 'fs';
-import csv from 'csv-parser';
 import dotenv from 'dotenv';
+import StockManager from './public/scripts/stockManager.js'; // Importing StockManager class from stockManager.js
+import SearchManager from './public/scripts/searchManager.js';
+import DataManager from './public/scripts/dataManager.js';
+import StockData from './public/scripts/stockData.js';
+import StockDataManager from './public/scripts/stockDataManager.js';
+import DataProcessor from './public/scripts/dataProcessor.js';
+import User from './public/scripts/user.js';
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -42,9 +48,14 @@ const db = new pg.Client({
   password: process.env.PG_PASSWORD,
   port: process.env.PG_PORT,
 });
+
 db.connect();
 
-let countries = [];
+const dataProcessor = new DataProcessor('./public/scripts/stocks_name_latest.csv');
+dataProcessor.processCSVFile();
+// Accessing the countries array data
+const countries = dataProcessor.getData();
+
 
 app.get("/", (req, res) => {
   res.render("index.ejs");
@@ -53,40 +64,27 @@ app.get("/", (req, res) => {
 let pickedSymbol; // Store the picked symbol here
 
 // add to list
+// Instantiate StockManager with db connection
+const stockManager = new StockManager(db);
+
+// Use stockManager in your routes or functions
 app.post('/add', async (req, res) => {
   const userId = req.user.id; // Assuming user ID is available in the request object
   const symbol = req.body.add; // Retrieve symbol from the form data
 
-  try {
-    const checkQuery = 'SELECT COUNT(*) AS count FROM favorite_stocks WHERE user_id = $1 AND symbol = $2';
-    const checkResult = await db.query(checkQuery, [userId, symbol]);
+  const result = await stockManager.addStock(userId, symbol);
 
-    if (checkResult.rows[0].count > 0) {
-      // Symbol already exists for the user
-      res.render('success.ejs', { userId: userId, symbol: symbol, message: 'Symbol already exists for the user.' });
-    } else {
-      const insertQuery = 'INSERT INTO favorite_stocks (user_id, symbol) VALUES ($1, $2) RETURNING *';
-      const values = [userId, symbol];
-      const result = await db.query(insertQuery, values);
-      
-      res.render('success.ejs', { userId: userId, symbol: symbol, message: '' });
-    }
-  } catch (error) {
-    console.error('Error adding symbol:', error);
-    res.render('success.ejs', { message: 'Error adding symbol' });
-  }
+  res.render('success.ejs', result);
 });
 
-
-// get stock list
 // Route to view the stock list
+// "/stocklist" route using stockManager
 app.get('/stocklist', async (req, res) => {
-  try {
-    const userId = req.user.id; // Assuming user ID is available in the request object
-    const query = 'SELECT * FROM favorite_stocks WHERE user_id = $1'; // Adjust this query based on your actual database schema
-    const { rows } = await db.query(query, [userId]);
+  const userId = req.user.id; // Assuming user ID is available in the request object
 
-    res.render('stocklist.ejs', { stocks: rows });
+  try {
+    const stocks = await stockManager.getStockList(userId);
+    res.render('stocklist.ejs', { stocks });
   } catch (error) {
     console.error('Error fetching stock list:', error);
     res.render('error.ejs', { message: 'Error fetching stock list' });
@@ -94,53 +92,59 @@ app.get('/stocklist', async (req, res) => {
 });
 
 
+// Instantiate SearchManager with countries data
+const searchManager = new SearchManager(countries);
+
+// Instantiate DataManager with API URL and RapidAPI Key
+const dataManager = new DataManager(API_URL, process.env.RAPIDAPI_KEY);
+
 // search symbol or company name
 app.get("/search", (req, res) => {
-  res.render('search', { countries: JSON.stringify(countries.map(item => item.symbolAndName)) });
+  res.render('search', { countries: JSON.stringify(searchManager.getSymbolAndNames()) });
 });
+
 // search statement
 app.get("/sestate", (req, res) => {
-  res.render('state', { countries: JSON.stringify(countries.map(item => item.symbolAndName)) });
+  res.render('state', { countries: JSON.stringify(searchManager.getSymbolAndNames()) });
 });
 
+// "/statement" routes using DataManager
 app.get("/statement", async (req, res) => {
-  let pickedSymbol = req.query.symbol;
-  let content;
+  const pickedSymbol = req.query.symbol;
 
   try {
-    content = await fetchIncomeStatement(pickedSymbol);
-      res.render('statement.ejs', content);
+    const content = await dataManager.fetchFinancialData(pickedSymbol, 'INCOME_STATEMENT');
+    res.render('statement.ejs', content);
   } catch (error) {
-    console.error('Error in /result route:', error);
+    console.error('Error in /statement route:', error);
     res.render('statement.ejs', { content: 'Error!', symbol: pickedSymbol });
   }
 });
 
 // search company overview
 app.get("/seover", (req, res) => {
-  res.render('over', { countries: JSON.stringify(countries.map(item => item.symbolAndName)) });
+  res.render('over', { countries: JSON.stringify(searchManager.getSymbolAndNames()) });
 });
 
+//"/overview" routes using DataManager
 app.get("/overview", async (req, res) => {
-  let pickedSymbol = req.query.symbol;
-  let content;
+  const pickedSymbol = req.query.symbol;
 
   try {
-    content = await fetchCompanyOverview(pickedSymbol);
-      res.render('overview.ejs', content);
+    const content = await dataManager.fetchFinancialData(pickedSymbol, 'OVERVIEW');
+    res.render('overview.ejs', content);
   } catch (error) {
-    console.error('Error in /result route:', error);
+    console.error('Error in /overview route:', error);
     res.render('overview.ejs', { content: 'Error!', symbol: pickedSymbol });
   }
 });
 
+// Implementing Object-Oriented Programming for managing stock data
+const stockDataManager = new StockDataManager(db);
+
 // show list stock and refresh
 app.post('/refresh', async (req, res) => {
-  let pickedSymbol = req.query.symbol; // Retrieve symbol from URL query parameter
-
-  if (!pickedSymbol) {
-    pickedSymbol = req.body.refresh; // Retrieve symbol from form data if not in query parameter
-  } // Assuming symbol is sent in the request body
+  let pickedSymbol = req.query.symbol || req.body.refresh;
 
   try {
     const config = {
@@ -159,60 +163,24 @@ app.post('/refresh', async (req, res) => {
 
     const response = await axios.request(config);
     const data = response.data;
-
     const globalQuoteData = data['Global Quote'];
 
-    const stockData = {
-      symbol: globalQuoteData['01. symbol'],
-      open_price: parseFloat(globalQuoteData['02. open']),
-      high_price: parseFloat(globalQuoteData['03. high']),
-      low_price: parseFloat(globalQuoteData['04. low']),
-      current_price: parseFloat(globalQuoteData['05. price']),
-      volume: parseInt(globalQuoteData['06. volume']),
-      last_trading_day: new Date(globalQuoteData['07. latest trading day']),
-      previous_close: parseFloat(globalQuoteData['08. previous close']),
-      change_amount: parseFloat(globalQuoteData['09. change']),
-      change_percent: parseFloat(globalQuoteData['10. change percent'])
-    };
+    const stockData = new StockData(
+      globalQuoteData['01. symbol'],
+      parseFloat(globalQuoteData['02. open']),
+      parseFloat(globalQuoteData['03. high']),
+      parseFloat(globalQuoteData['04. low']),
+      parseFloat(globalQuoteData['05. price']),
+      parseInt(globalQuoteData['06. volume']),
+      new Date(globalQuoteData['07. latest trading day']),
+      parseFloat(globalQuoteData['08. previous close']),
+      parseFloat(globalQuoteData['09. change']),
+      parseFloat(globalQuoteData['10. change percent'])
+    );
 
-    const queryCheck = `SELECT * FROM stock_data WHERE symbol = $1`;
-    const checkResult = await db.query(queryCheck, [stockData.symbol]);
+    await stockDataManager.updateStockData(stockData);
 
-    if (checkResult.rows.length > 0) {
-      const updateQuery = `UPDATE stock_data 
-                           SET symbol = $1, open_price = $2, high_price = $3, low_price = $4, current_price = $5, volume = $6,
-                               last_trading_day = $7, previous_close = $8, change_amount = $9, change_percent = $10
-                           WHERE symbol = $1`;
-      await db.query(updateQuery, [
-        stockData.symbol,
-        stockData.open_price,
-        stockData.high_price,
-        stockData.low_price,
-        stockData.current_price,
-        stockData.volume,
-        stockData.last_trading_day,
-        stockData.previous_close,
-        stockData.change_amount,
-        stockData.change_percent
-      ]);
-    } else {
-      const insertQuery = `INSERT INTO stock_data (symbol, open_price, high_price, low_price, current_price, volume, last_trading_day, previous_close, change_amount, change_percent) 
-                           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`;
-      await db.query(insertQuery, [
-        stockData.symbol,
-        stockData.open_price,
-        stockData.high_price,
-        stockData.low_price,
-        stockData.current_price,
-        stockData.volume,
-        stockData.last_trading_day,
-        stockData.previous_close,
-        stockData.change_amount,
-        stockData.change_percent
-      ]);
-    }
-
-    res.redirect(`/show?symbol=${pickedSymbol}`); // Redirect to show route after inserting or updating data
+    res.redirect(`/show?symbol=${pickedSymbol}`);
   } catch (error) {
     console.error('Error in /refresh route:', error);
     res.render('show.ejs', { content: 'Error!', symbol: pickedSymbol });
@@ -223,11 +191,9 @@ app.get('/show', async (req, res) => {
   const pickedSymbol = req.query.symbol;
 
   try {
-    const query = 'SELECT * FROM stock_data WHERE symbol = $1';
-    const { rows } = await db.query(query, [pickedSymbol]);
+    const stockData = await stockDataManager.getStockData(pickedSymbol);
 
-    if (rows.length > 0) {
-      const stockData = rows[0];
+    if (stockData) {
       res.render('show.ejs', { content: stockData, symbol: pickedSymbol });
     } else {
       res.render('show.ejs', { content: null, symbol: pickedSymbol });
@@ -238,54 +204,16 @@ app.get('/show', async (req, res) => {
   }
 });
 
+// Implementing Object-Oriented Programming for managing stock data and fetching prices
+const stockPricesManager = new DataManager(API_URL, process.env.RAPIDAPI_KEY);
 
 // get result from search
 app.get('/result', async (req, res) => {
-  pickedSymbol = req.query.symbol;
-
   try {
-    let config = {
-      method: 'GET',
-      url: API_URL + '/query',
-      params: {
-        interval: '5min',
-        function: 'TIME_SERIES_INTRADAY',
-        symbol: pickedSymbol,
-        datatype: 'json',
-        output_size: 'compact'
-      },
-      headers: {
-        'x-rapidapi-host': 'alpha-vantage.p.rapidapi.com',
-        'x-rapidapi-key': process.env.RAPIDAPI_KEY
-      }
-    };
-
-    const response = await axios.request(config);
-    const data = response.data;
-
-    // Access and format the required information from the response data
-    const timeSeries = data['Time Series (5min)'];
-
-    // Construct the prices array to pass to the template
-    const prices = [];
-    const stockSymbol = pickedSymbol;
-
-    for (const timestamp in timeSeries) {
-      if (timeSeries.hasOwnProperty(timestamp)) {
-        const entry = timeSeries[timestamp];
-        const price = {
-          timestamp: timestamp,
-          openPrice: entry['1. open'],
-          highPrice: entry['2. high'],
-          lowPrice: entry['3. low'],
-          closePrice: entry['4. close'],
-          volume: entry['5. volume'],
-        };
-        prices.push(price);
-      }
-    }
-
-    res.render('pickedStock.ejs', { content: prices, symbol: stockSymbol, timeSerie: "INTRADAY" });
+    const pickedSymbol = req.query.symbol;
+    const content = await stockPricesManager.fetchStockPrices(pickedSymbol, 'TIME_SERIES_DAILY');
+    
+    res.render('pickedStock.ejs', { content: content.content, symbol: pickedSymbol, timeSerie: content.timeSerie }); // Include timeSerie in the content object
   } catch (error) {
     console.error('Error in /result route:', error);
     res.render('pickedStock.ejs', { content: 'Error!', symbol: pickedSymbol });
@@ -295,26 +223,26 @@ app.get('/result', async (req, res) => {
 app.post('/result', async (req, res) => {
   try {
     let content;
-    let symbol = pickedSymbol;
+    const symbol = req.query.symbol || req.body.symbol;
 
     if (req.body.companyOverview) {
-      content = await fetchCompanyOverview(symbol);
+      content = await dataManager.fetchFinancialData(symbol, 'OVERVIEW');
       res.render('overview.ejs', content);
     } else if (req.body.dailyPrice) {
-      content = await fetchStockPrices(symbol, 'TIME_SERIES_DAILY');
+      content = await stockPricesManager.fetchStockPrices(symbol, 'TIME_SERIES_DAILY');
     } else if (req.body.intradayPrice) {
-      content = await fetchStockPrices(symbol, 'TIME_SERIES_INTRADAY');
+      content = await stockPricesManager.fetchStockPrices(symbol, 'TIME_SERIES_INTRADAY');
     } else if (req.body.weeklyPrice) {
-      content = await fetchStockPrices(symbol, 'TIME_SERIES_WEEKLY');
+      content = await stockPricesManager.fetchStockPrices(symbol, 'TIME_SERIES_WEEKLY');
     } else if (req.body.monthlyPrice) {
-      content = await fetchStockPrices(symbol, 'TIME_SERIES_MONTHLY');
+      content = await stockPricesManager.fetchStockPrices(symbol, 'TIME_SERIES_MONTHLY');
     } else if (req.body.incomeStatement) {
-      content = await fetchIncomeStatement(symbol);
+      content = await dataManager.fetchFinancialData(symbol, 'INCOME_STATEMENT');
       res.render('statement.ejs', content);
     }
 
     if (!req.body.companyOverview && !req.body.incomeStatement) {
-      res.render('pickedStock.ejs', content);
+      res.render('pickedStock.ejs', content); // Include timeSerie in the content object
     }
   } catch (error) {
     console.error('Error in /result POST route:', error);
@@ -399,22 +327,24 @@ app.post(
 app.post("/register", async (req, res) => {
   const email = req.body.username;
   const password = req.body.password;
+  
+  const newUser = new User(email,password);
 
   try {
     const checkResult = await db.query("SELECT * FROM users WHERE email = $1", [
-      email,
+      newUser.email,
     ]);
 
     if (checkResult.rows.length > 0) {
       req.redirect("/login");
     } else {
-      bcrypt.hash(password, saltRounds, async (err, hash) => {
+      bcrypt.hash(newUser.password, saltRounds, async (err, hash) => {
         if (err) {
           console.error("Error hashing password:", err);
         } else {
           const result = await db.query(
             "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING *",
-            [email, hash]
+            [newUser.email, hash]
           );
           const user = result.rows[0];
           req.login(user, (err) => {
@@ -507,129 +437,3 @@ passport.deserializeUser((user, cb) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
-// Fetch stock prices based on time series function
-async function fetchStockPrices(symbol, timeSeriesFunction) {
-  try {
-    const config = {
-      method: 'GET',
-      url: API_URL + '/query',
-      params: {
-        function: timeSeriesFunction,
-        symbol: symbol,
-        ...(timeSeriesFunction === 'TIME_SERIES_INTRADAY' && { interval: '5min' }),
-        datatype: 'json',
-      },
-      headers: {
-        'x-rapidapi-host': 'alpha-vantage.p.rapidapi.com',
-        'x-rapidapi-key': process.env.RAPIDAPI_KEY
-      },
-    };
-
-    const response = await axios.request(config);
-    const data = response.data;
-
-    // Access and format the required information from the response data
-    const metaData = data['Meta Data'];
-    const timeSeries = data[timeSeriesFunction === 'TIME_SERIES_INTRADAY' ? 'Time Series (5min)' :
-      timeSeriesFunction === 'TIME_SERIES_DAILY' ? 'Time Series (Daily)' :
-        timeSeriesFunction === 'TIME_SERIES_WEEKLY' ? 'Weekly Time Series' :
-          timeSeriesFunction === 'TIME_SERIES_MONTHLY' ? 'Monthly Time Series' : undefined];
-
-    // Construct the prices array to pass to the template
-    const prices = [];
-    const stockSymbol = symbol;
-
-    for (const timestamp in timeSeries) {
-      if (timeSeries.hasOwnProperty(timestamp)) {
-        const entry = timeSeries[timestamp];
-        const price = {
-          timestamp: timestamp,
-          openPrice: entry['1. open'],
-          highPrice: entry['2. high'],
-          lowPrice: entry['3. low'],
-          closePrice: entry['4. close'],
-          volume: entry['5. volume'],
-        };
-        prices.push(price);
-      }
-    }
-    const timeSerie = timeSeriesFunction.substring('TIME_SERIES_'.length);
-    return { content: prices, symbol: stockSymbol, timeSerie: timeSerie };
-  } catch (error) {
-    console.error('Error in fetchStockPrices:', error);
-    throw new Error('Failed to fetch stock prices.');
-  }
-}
-
-async function fetchCompanyOverview(symbol) {
-  try {
-    const config = {
-      method: 'GET',
-      url: API_URL + '/query',
-      params: {
-        function: 'OVERVIEW',
-        symbol: symbol,
-        apikey: process.env.RAPIDAPI_KEY,
-      },
-      headers: {
-        'x-rapidapi-host': 'alpha-vantage.p.rapidapi.com',
-        'x-rapidapi-key': process.env.RAPIDAPI_KEY
-      },
-    };
-
-    const response = await axios.request(config);
-    const data = response.data;
-
-    // Access and format the required information from the response data
-    const companyOverview = {
-      companyName: data.Name,
-      exchange: data.Exchange,
-      symbol: data.Symbol,
-      description: data.Description,
-      // Add more properties based on the actual structure of the data
-    };
-
-    return { content: companyOverview, symbol: symbol, timeSerie: "Company Overview" };
-  } catch (error) {
-    console.error('Error in fetchCompanyOverview:', error);
-    throw new Error('Failed to fetch company overview.');
-  }
-}
-async function fetchIncomeStatement(symbol) {
-  try {
-    const config = {
-      method: 'GET',
-      url: API_URL + '/query',
-      params: {
-        function: 'INCOME_STATEMENT',
-        symbol: symbol,
-        apikey: process.env.RAPIDAPI_KEY,
-      },
-      headers: {
-        'x-rapidapi-host': 'alpha-vantage.p.rapidapi.com',
-        'x-rapidapi-key': process.env.RAPIDAPI_KEY
-      },
-    };
-
-    const response = await axios.request(config);
-    const data = response.data;
-
-    // Access and format the required information from the response data
-    // Modify this part based on the actual structure of the Income Statement data
-
-    return { content: data, symbol: symbol, timeSerie: "Income Statement" };
-  } catch (error) {
-    console.error('Error in fetchIncomeStatement:', error);
-    throw new Error('Failed to fetch income statement.');
-  }
-}
-
-fs.createReadStream('./public/scripts/stocks_name_latest.csv')
-  .pipe(csv())
-  .on('data', (row) => {
-    countries.push(row);
-  })
-  .on('end', () => {
-    console.log('CSV file successfully processed');
-  });

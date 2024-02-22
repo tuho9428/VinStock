@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html style="font-size: 16px;" lang="en"><head>
+<html style="font-size: 16px;" lang="en">
+<head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <meta name="keywords" content="Billionaires Peter Thiel and Alan Howard back new $10bn crypto exchange">
@@ -26,8 +27,12 @@
     <meta property="og:title" content="Home">
     <meta property="og:description" content="">
     <meta property="og:type" content="website">
-  <meta data-intl-tel-input-cdn-path="intlTelInput/"></head>
-  <body data-path-to-root="./" data-include-products="false" class="u-body u-xl-mode" data-lang="en" style="overflow-y: scroll;"><header class="u-black u-clearfix u-header u-header" id="sec-35cf"><div class="u-clearfix u-sheet u-sheet-1">
+  <meta data-intl-tel-input-cdn-path="intlTelInput/">
+</head>
+
+<body data-path-to-root="./" data-include-products="false" class="u-body u-xl-mode" data-lang="en" style="overflow-y: scroll;">
+
+  <header class="u-black u-clearfix u-header u-header" id="sec-35cf"><div class="u-clearfix u-sheet u-sheet-1">
         <a href="/" class="u-image u-logo u-image-1" title="logo" data-image-width="640" data-image-height="832">
           <img src="images/logo222.png" class="u-logo-image u-logo-image-1">
         </a>
@@ -80,12 +85,12 @@
     <%= timeSerie %>
   </div>
 
-<!-- Add the canvas element for the line chart -->
+<!-- Add the div element for the Google Candlestick Chart -->
 <div style="max-width: 900px;">
-  <canvas id="lineChart"></canvas>
-  </div>
+<div id="googleCandlestickChart" style="width: 850px; height: 500px;"></div>
+</div>
 
-<form id="myForm" method="post" action='/result' class="button-container">
+<form id="myForm" method="post" action='/result?symbol=<%=symbol%>' class="button-container">
   <button type="submit" name="dailyPrice" value="Get Daily Price" onclick="displayClickedButton(this)">Daily</button>
   <button type="submit" name="intradayPrice" value="Get Intraday Price" onclick="displayClickedButton(this)">Intraday</button>
   <button type="submit" name="weeklyPrice" value="Get Weekly Price" onclick="displayClickedButton(this)">Weekly</button>
@@ -100,102 +105,39 @@
 
 <div class="response-area">
   <% if (Array.isArray(content) && content.length > 0) { %>
-    <% content.forEach((price) => { %>
-      <div>
-        <label for="timestamp">Timestamp:</label>
-        <div id="timestamp">
-          <%= price.timestamp %>
-        </div>
-      </div>
-      <div>
-        <label for="openPrice">Open Price:</label>
-        <div id="openPrice">
-          <%= price.openPrice || 'N/A' %>
-        </div>
-      </div>
-      <div>
-        <label for="highPrice">High Price:</label>
-        <div id="highPrice">
-          <%= price.highPrice || 'N/A' %>
-        </div>
-      </div>
-      <div>
-        <label for="lowPrice">Low Price:</label>
-        <div id="lowPrice">
-          <%= price.lowPrice || 'N/A' %>
-        </div>
-      </div>
-      <div>
-        <label for="closePrice">Close Price:</label>
-        <div id="closePrice">
-          <%= price.closePrice || 'N/A' %>
-        </div>
-      </div>
-      <div>
-        <label for="volume">Volume:</label>
-        <div id="volume">
-          <%= price.volume || 'N/A' %>
-        </div>
-      </div>
+    <!-- Add the JavaScript code to render the Google Candlestick Chart -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
 
-      <hr>
-    <% }) %>
+      function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', '');
+        data.addColumn('number', '');
+        data.addColumn('number', '');
+        data.addColumn('number', '');
+        data.addColumn('number', '');
 
-    <!-- Add the JavaScript code to render the line chart -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-      // Step 5: Extract necessary data points for the line chart
-      const labels = [];
-      const closePrices = [];
+        var candlestickData = [];
+        <% content.slice(0, 52).reverse().forEach((price) => { %>
+          candlestickData.push(['<%= price.timestamp %>', <%= price.lowPrice || 0 %>, <%= price.openPrice || 0 %>, <%= price.closePrice || 0 %>, <%= price.highPrice || 0 %>]);
+        <% }) %>
 
-      <% content.slice(0, 52).reverse().forEach((price) => { %>
-        labels.push('<%= price.timestamp %>');
-        closePrices.push('<%= price.closePrice || 'N/A' %>');
-      <% }) %>
+        data.addRows(candlestickData);
 
-      // Step 6: Create a new instance of the line chart
-      const ctx = document.getElementById('lineChart').getContext('2d');
-      const lineChart = new Chart(ctx, {
-          type: 'line',
-          data: {
-              labels: labels,
-              datasets: [{
-                  label: 'Close Prices',
-                  data: closePrices,
-                  borderColor: 'blue',
-                  fill: false
-              }]
-          },
-          options: {
-              responsive: true,
-              scales: {
-                  x: {
-                      display: true,
-                      title: {
-                          display: true,
-                          text: 'Timestamp'
-                      },
-                      grid: {
-                        display: false,
-                      }
-                    
-                  },
-                  y: {
-                      display: true,
-                      title: {
-                          display: true,
-                          text: 'Close Price'
-                      },
-                      grid: {
-                        display: false,
-                      }
-                  }
-              }
+        var options = {
+          legend: 'none',
+          animation: {startup: true, duration: 1000, easing:'inAndOut'},
+          candlestick: {
+            fallingColor: { strokeWidth: 1, fill:'#a52714', stroke: '#a52714', hollowIsRising: true }, // red candles
+            risingColor: { strokeWidth: 1, fill:'#0f9d58', stroke: '#0f9d58' }, // green candles
           }
-      });
+        };
 
-      // Step 7: Render the chart on the canvas element
-      lineChart.render();
+        var chart = new google.visualization.CandlestickChart(document.getElementById('googleCandlestickChart'));
+        chart.draw(data, options);
+      }
     </script>
 
   <% } else { %>
@@ -209,9 +151,11 @@
   </div>
 </div>
 
-
 <footer class="u-align-center u-clearfix u-footer u-grey-80 u-footer" id="sec-6f38"><div class="u-clearfix u-sheet u-sheet-1">
   <p class="u-small-text u-text u-text-variant u-text-1">Copyright</p>
-</div></footer>
+</div>
+</footer>
 
-</body></html>
+</body>
+
+</html>
