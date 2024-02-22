@@ -11,6 +11,7 @@ import axios from "axios";
 import fs from 'fs';
 import csv from 'csv-parser';
 import dotenv from 'dotenv';
+import StockManager from './public/scripts/stockManager.js'; // Importing StockManager class from stockManager.js
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -42,6 +43,7 @@ const db = new pg.Client({
   password: process.env.PG_PASSWORD,
   port: process.env.PG_PORT,
 });
+
 db.connect();
 
 let countries = [];
@@ -53,28 +55,17 @@ app.get("/", (req, res) => {
 let pickedSymbol; // Store the picked symbol here
 
 // add to list
+// Instantiate StockManager with db connection
+const stockManager = new StockManager(db);
+
+// Use stockManager in your routes or functions
 app.post('/add', async (req, res) => {
   const userId = req.user.id; // Assuming user ID is available in the request object
   const symbol = req.body.add; // Retrieve symbol from the form data
 
-  try {
-    const checkQuery = 'SELECT COUNT(*) AS count FROM favorite_stocks WHERE user_id = $1 AND symbol = $2';
-    const checkResult = await db.query(checkQuery, [userId, symbol]);
+  const result = await stockManager.addStock(userId, symbol);
 
-    if (checkResult.rows[0].count > 0) {
-      // Symbol already exists for the user
-      res.render('success.ejs', { userId: userId, symbol: symbol, message: 'Symbol already exists for the user.' });
-    } else {
-      const insertQuery = 'INSERT INTO favorite_stocks (user_id, symbol) VALUES ($1, $2) RETURNING *';
-      const values = [userId, symbol];
-      const result = await db.query(insertQuery, values);
-      
-      res.render('success.ejs', { userId: userId, symbol: symbol, message: '' });
-    }
-  } catch (error) {
-    console.error('Error adding symbol:', error);
-    res.render('success.ejs', { message: 'Error adding symbol' });
-  }
+  res.render('success.ejs', result);
 });
 
 
