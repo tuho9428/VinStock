@@ -13,6 +13,7 @@ import csv from 'csv-parser';
 import dotenv from 'dotenv';
 import StockManager from './public/scripts/stockManager.js'; // Importing StockManager class from stockManager.js
 import SearchManager from './public/scripts/searchManager.js';
+import DataManager from './public/scripts/dataManager.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -87,6 +88,9 @@ app.get('/stocklist', async (req, res) => {
 // Instantiate SearchManager with countries data
 const searchManager = new SearchManager(countries);
 
+// Instantiate DataManager with API URL and RapidAPI Key
+const dataManager = new DataManager(API_URL, process.env.RAPIDAPI_KEY);
+
 // search symbol or company name
 app.get("/search", (req, res) => {
   res.render('search', { countries: JSON.stringify(searchManager.getSymbolAndNames()) });
@@ -96,15 +100,15 @@ app.get("/sestate", (req, res) => {
   res.render('state', { countries: JSON.stringify(searchManager.getSymbolAndNames()) });
 });
 
+// "/statement" routes using DataManager
 app.get("/statement", async (req, res) => {
-  let pickedSymbol = req.query.symbol;
-  let content;
+  const pickedSymbol = req.query.symbol;
 
   try {
-    content = await fetchIncomeStatement(pickedSymbol);
-      res.render('statement.ejs', content);
+    const content = await dataManager.fetchFinancialData(pickedSymbol, 'INCOME_STATEMENT');
+    res.render('statement.ejs', content);
   } catch (error) {
-    console.error('Error in /result route:', error);
+    console.error('Error in /statement route:', error);
     res.render('statement.ejs', { content: 'Error!', symbol: pickedSymbol });
   }
 });
@@ -114,15 +118,15 @@ app.get("/seover", (req, res) => {
   res.render('over', { countries: JSON.stringify(searchManager.getSymbolAndNames()) });
 });
 
+//"/overview" routes using DataManager
 app.get("/overview", async (req, res) => {
-  let pickedSymbol = req.query.symbol;
-  let content;
+  const pickedSymbol = req.query.symbol;
 
   try {
-    content = await fetchCompanyOverview(pickedSymbol);
-      res.render('overview.ejs', content);
+    const content = await dataManager.fetchFinancialData(pickedSymbol, 'OVERVIEW');
+    res.render('overview.ejs', content);
   } catch (error) {
-    console.error('Error in /result route:', error);
+    console.error('Error in /overview route:', error);
     res.render('overview.ejs', { content: 'Error!', symbol: pickedSymbol });
   }
 });
@@ -544,69 +548,6 @@ async function fetchStockPrices(symbol, timeSeriesFunction) {
   } catch (error) {
     console.error('Error in fetchStockPrices:', error);
     throw new Error('Failed to fetch stock prices.');
-  }
-}
-
-async function fetchCompanyOverview(symbol) {
-  try {
-    const config = {
-      method: 'GET',
-      url: API_URL + '/query',
-      params: {
-        function: 'OVERVIEW',
-        symbol: symbol,
-        apikey: process.env.RAPIDAPI_KEY,
-      },
-      headers: {
-        'x-rapidapi-host': 'alpha-vantage.p.rapidapi.com',
-        'x-rapidapi-key': process.env.RAPIDAPI_KEY
-      },
-    };
-
-    const response = await axios.request(config);
-    const data = response.data;
-
-    // Access and format the required information from the response data
-    const companyOverview = {
-      companyName: data.Name,
-      exchange: data.Exchange,
-      symbol: data.Symbol,
-      description: data.Description,
-      // Add more properties based on the actual structure of the data
-    };
-
-    return { content: companyOverview, symbol: symbol, timeSerie: "Company Overview" };
-  } catch (error) {
-    console.error('Error in fetchCompanyOverview:', error);
-    throw new Error('Failed to fetch company overview.');
-  }
-}
-async function fetchIncomeStatement(symbol) {
-  try {
-    const config = {
-      method: 'GET',
-      url: API_URL + '/query',
-      params: {
-        function: 'INCOME_STATEMENT',
-        symbol: symbol,
-        apikey: process.env.RAPIDAPI_KEY,
-      },
-      headers: {
-        'x-rapidapi-host': 'alpha-vantage.p.rapidapi.com',
-        'x-rapidapi-key': process.env.RAPIDAPI_KEY
-      },
-    };
-
-    const response = await axios.request(config);
-    const data = response.data;
-
-    // Access and format the required information from the response data
-    // Modify this part based on the actual structure of the Income Statement data
-
-    return { content: data, symbol: symbol, timeSerie: "Income Statement" };
-  } catch (error) {
-    console.error('Error in fetchIncomeStatement:', error);
-    throw new Error('Failed to fetch income statement.');
   }
 }
 
