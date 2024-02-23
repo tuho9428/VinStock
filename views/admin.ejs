@@ -1,0 +1,35 @@
+<%- include("partials/header.ejs") %>
+
+<h1>Welcome Admin!</h1>
+
+<h2>Manage Stock Symbols</h2>
+
+<form action="/admin/add-symbol" method="POST">
+  <label for="symbol">Add Stock Symbol:</label>
+  <input type="text" id="symbol" name="symbol" required />
+  <button type="submit">Add Symbol</button>
+</form>
+
+<form action="/admin/delete-symbol" method="POST">
+  <label for="symbol">Delete Stock Symbol:</label>
+  <input type="text" id="symbol" name="symbol" required />
+  <button type="submit">Delete Symbol</button>
+</form>
+
+<form action="/admin/symbols" method="GET">
+
+  <button type="submit">Symbols</button>
+</form>
+
+<form action="/admin/users" method="GET">
+
+  <button type="submit">Users</button>
+</form>
+
+<!-- Additional functionalities can be added here -->
+
+<div>
+  <a href="/logout">Logout</a>
+</div>
+
+<%- include("partials/footer.ejs") %>

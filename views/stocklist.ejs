@@ -84,7 +84,7 @@
   
   <ul class="stock-list">
       <% stocks.forEach(stock => { %>
-          <li class="stock-list-item">User ID: <%= stock.user_id %>, Symbol: <%= stock.symbol %></li>
+          <li class="stock-list-item">Role: <%= role %>, User ID: <%= stock.user_id %>, Symbol: <%= stock.symbol %></li>
           <form action="/result" method="GET">
               <input type="hidden" name="symbol" value="<%= stock.symbol %>">
               <button type="submit">View <%= stock.symbol %> Details</button>

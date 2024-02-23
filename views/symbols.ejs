@@ -1,0 +1,15 @@
+<%- include("partials/header.ejs") %>
+
+<h1>Welcome Admin!</h1>
+
+<h2>Manage Stock Symbols</h2>
+
+<h1>Symbol List</h1>
+  
+  <ul>
+    <% symbolList.forEach(symbol => { %>
+      <li><%= symbol %></li>
+    <% }); %>
+  </ul>
+
+<%- include("partials/footer.ejs") %>

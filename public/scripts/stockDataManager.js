@@ -68,6 +68,45 @@ class StockDataManager {
     }
   }
 
+  async addSymbol(symbol) {
+    try {
+      // Add the symbol to the database
+      const query = "INSERT INTO stock_data (symbol) VALUES ($1)";
+      await this.db.query(query, [symbol]);
+    } catch (error) {
+      throw new Error("Error adding symbol to the database");
+    }
+  }
+
+  async removeSymbol(symbol) {
+    try {
+      const query = "DELETE FROM stock_data WHERE symbol = $1";
+      await this.db.query(query, [symbol]);
+    } catch (error) {
+      throw new Error("Error removing symbol from the database");
+    }
+  }
+
+  async getSymbolListAdmin() {
+    try {
+      const query = "SELECT symbol FROM stock_data";
+      const result = await this.db.query(query);
+      return result.rows.map(row => row.symbol);
+    } catch (error) {
+      throw new Error("Error fetching symbol list from the database");
+    }
+  }
+
+  async getUserList() {
+    try {
+      const query = "SELECT email FROM users"; // Adjust this query based on your actual database schema
+      const result = await this.db.query(query);
+      return result.rows.map(row => row.email);
+    } catch (error) {
+      throw new Error("Error fetching symbol list from the database");
+    }
+  }
+
 }
 
   export default StockDataManager;
