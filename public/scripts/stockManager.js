@@ -35,6 +35,17 @@ class StockManager {
         throw new Error('Error fetching stock list');
       }
     }
+
+    async getSymbolList() {
+      try {
+        const query = 'SELECT symbol FROM stock_data'; // Adjust this query based on your actual database schema
+        const { rows } = await this.db.query(query);
+        return rows;
+      } catch (error) {
+        console.error('Error fetching Symbol list:', error);
+        throw new Error('Error fetching Symbol list');
+      }
+    }
     
   }
 

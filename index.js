@@ -81,10 +81,10 @@ app.post('/add', async (req, res) => {
 // "/stocklist" route using stockManager
 app.get('/stocklist', async (req, res) => {
   const userId = req.user.id; // Assuming user ID is available in the request object
-
+  const userRole = req.user.role;
   try {
     const stocks = await stockManager.getStockList(userId);
-    res.render('stocklist.ejs', { stocks });
+    res.render('stocklist.ejs', { stocks: stocks , role: userRole });
   } catch (error) {
     console.error('Error fetching stock list:', error);
     res.render('error.ejs', { message: 'Error fetching stock list' });
@@ -250,6 +250,57 @@ app.post('/result', async (req, res) => {
   }
 });
 
+app.get("/admin/add-symbol", (req, res) => {
+  res.render("admin.ejs");
+});
+
+const symbolManager = new StockDataManager(db);
+
+app.post("/admin/add-symbol", async (req, res) => {
+  const symbol = req.body.symbol;
+
+  if (!symbol) {
+    return res.status(400).send("Symbol is required");
+  }
+
+  try {
+    await symbolManager.addSymbol(symbol);
+    
+    res.redirect("/secrets");
+  } catch (error) {
+    console.error('Error adding symbol:', error);
+    res.render('error.ejs', { message: 'Error adding symbol' });
+  }
+});
+
+app.post("/admin/delete-symbol", async (req, res) => {
+  const symbol = req.body.symbol;
+
+  if (!symbol) {
+    return res.status(400).send("Symbol is required");
+  }
+
+  try {
+    await symbolManager.removeSymbol(symbol);
+    
+    res.redirect("/secrets");
+  } catch (error) {
+    console.error('Error removing symbol:', error);
+    res.render('error.ejs', { message: 'Error removing symbol' });
+  }
+});
+
+app.get("/admin/symbols", async (req, res) => {
+  try {
+    const symbolList = await symbolManager.getSymbolList();
+    res.render("symbols.ejs", { symbolList });
+  } catch (error) {
+    console.error('Error fetching symbol list:', error);
+    res.render('error.ejs', { message: 'Error fetching symbol list' });
+  }
+});
+
+
 app.get("/contact", (req, res) => {
   res.render("contact.ejs");
 });
@@ -278,6 +329,15 @@ app.get("/service", (req, res) => {
   res.render("works.ejs");
 });
 
+// Ensure only users with the admin role can access the '/admin' route and render the admin.ejs page
+app.get("/admin", (req, res) => {
+  if (req.isAuthenticated() && req.user.role === 'admin') {
+    res.render("admin.ejs");
+  } else {
+    res.redirect("/login");
+  }
+});
+
 app.get("/logout", (req, res) => {
   req.logout(function (err) {
     if (err) {
@@ -287,11 +347,19 @@ app.get("/logout", (req, res) => {
   });
 });
 
-app.get("/secrets", (req, res) => {
+const symbolList = new StockManager(db);
+
+app.get("/secrets", async (req, res) => {
   if (req.isAuthenticated()) {
     const userId = req.user.id; // Get the user ID from the request object
     // Use the userId for further operations
-    res.render("secrets.ejs");
+    try {
+      const symbolLists = await symbolList.getSymbolList();
+      res.render('secrets.ejs', { symbolLists });
+    } catch (error) {
+      console.error('Error fetching stock list:', error);
+      res.render('error.ejs', { message: 'Error fetching stock list' });
+    }
   } else {
     res.redirect("/login");
   }
@@ -312,12 +380,28 @@ app.get(
   })
 );
 
+// Update the '/login' POST route to authenticate both admin and local users
 app.post(
   "/login",
-  passport.authenticate("local", {
-    successRedirect: "/secrets",
-    failureRedirect: "/login",
-  })
+  (req, res, next) => {
+    passport.authenticate("admin", (err, user, info) => {
+      if (user) {
+        return req.logIn(user, (loginErr) => {
+          if (loginErr) {
+            return next(loginErr);
+          }
+          return res.redirect("/admin");
+        });
+      }
+      return next();
+    })(req, res, next);
+  },
+  (req, res) => {
+    passport.authenticate("local", {
+      successRedirect: "/secrets",
+      failureRedirect: "/login",
+    })(req, res);
+  }
 );
 
 app.post("/register", async (req, res) => {
@@ -366,6 +450,39 @@ app.post("/register", async (req, res) => {
   
 });
 
+// Define the 'admin' authentication strategy
+passport.use(
+  "admin",
+  new Strategy(async function verify(username, password, cb) {
+    try {
+      const result = await db.query("SELECT * FROM users WHERE email = $1 AND is_admin = true", [
+        username,
+      ]);
+      if (result.rows.length > 0) {
+        const user = result.rows[0];
+        const storedHashedPassword = user.password;
+        bcrypt.compare(password, storedHashedPassword, (err, valid) => {
+          if (err) {
+            console.error("Error comparing passwords:", err);
+            return cb(err);
+          } else {
+            if (valid) {
+              console.log('admin');
+              return cb(null, { id: user.id, role: 'admin', /* Other user properties */ });
+            } else {
+              return cb(null, false);
+            }
+          }
+        });
+      } else {
+        return cb("Admin not found");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  })
+);
+
 passport.use(
   "local",
   new Strategy(async function verify(username, password, cb) {
@@ -383,7 +500,7 @@ passport.use(
           } else {
             if (valid) {
               // return cb(null, user);
-              return cb(null, { id: user.id, /* Other user properties */ });
+              return cb(null, { id: user.id,  role: 'local'/* Other user properties */ });
             } else {
               return cb(null, false);
             }
@@ -429,6 +546,7 @@ passport.use(
     }
   )
 );
+
 passport.serializeUser((user, cb) => {
   cb(null, user);
 });
