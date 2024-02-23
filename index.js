@@ -250,6 +250,57 @@ app.post('/result', async (req, res) => {
   }
 });
 
+app.get("/admin/add-symbol", (req, res) => {
+  res.render("admin.ejs");
+});
+
+const symbolManager = new StockDataManager(db);
+
+app.post("/admin/add-symbol", async (req, res) => {
+  const symbol = req.body.symbol;
+
+  if (!symbol) {
+    return res.status(400).send("Symbol is required");
+  }
+
+  try {
+    await symbolManager.addSymbol(symbol);
+    
+    res.redirect("/secrets");
+  } catch (error) {
+    console.error('Error adding symbol:', error);
+    res.render('error.ejs', { message: 'Error adding symbol' });
+  }
+});
+
+app.post("/admin/delete-symbol", async (req, res) => {
+  const symbol = req.body.symbol;
+
+  if (!symbol) {
+    return res.status(400).send("Symbol is required");
+  }
+
+  try {
+    await symbolManager.removeSymbol(symbol);
+    
+    res.redirect("/secrets");
+  } catch (error) {
+    console.error('Error removing symbol:', error);
+    res.render('error.ejs', { message: 'Error removing symbol' });
+  }
+});
+
+app.get("/admin/symbols", async (req, res) => {
+  try {
+    const symbolList = await symbolManager.getSymbolList();
+    res.render("symbols.ejs", { symbolList });
+  } catch (error) {
+    console.error('Error fetching symbol list:', error);
+    res.render('error.ejs', { message: 'Error fetching symbol list' });
+  }
+});
+
+
 app.get("/contact", (req, res) => {
   res.render("contact.ejs");
 });
