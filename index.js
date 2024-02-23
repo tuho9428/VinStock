@@ -380,29 +380,34 @@ app.get(
   })
 );
 
-// Update the '/login' POST route to authenticate both admin and local users
-app.post(
-  "/login",
-  (req, res, next) => {
-    passport.authenticate("admin", (err, user, info) => {
-      if (user) {
-        return req.logIn(user, (loginErr) => {
-          if (loginErr) {
-            return next(loginErr);
-          }
-          return res.redirect("/admin");
-        });
-      }
-      return next();
-    })(req, res, next);
-  },
-  (req, res) => {
-    passport.authenticate("local", {
-      successRedirect: "/secrets",
-      failureRedirect: "/login",
-    })(req, res);
-  }
-);
+app.post("/login", (req, res, next) => {
+  passport.authenticate("admin", (err, user, info) => {
+    if (user) {
+      return req.logIn(user, (loginErr) => {
+        if (loginErr) {
+          return next(loginErr);
+        }
+        return res.redirect("/admin");
+      });
+    } else {
+      // If admin authentication fails, proceed to local authentication
+      passport.authenticate("local", (err, user, info) => {
+        if (user) {
+          return req.logIn(user, (loginErr) => {
+            if (loginErr) {
+              return next(loginErr);
+            }
+            return res.redirect("/secrets");
+          });
+        } else {
+          // If both admin and local authentication fail, display error message
+          return res.render('register', { error: "Incorrect username or password"});
+        }
+      })(req, res, next);
+    }
+  })(req, res, next);
+});
+
 
 app.post("/register", async (req, res) => {
   const email = req.body.username;
