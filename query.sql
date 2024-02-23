@@ -2,10 +2,11 @@ DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS stock_data;
 DROP TABLE IF EXISTS favorite_stocks;
 
-CREATE TABLE users(
-id SERIAL PRIMARY KEY,
-email VARCHAR(100) NOT NULL UNIQUE,
-password VARCHAR(100)
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100),
+    is_admin BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE stock_data (
