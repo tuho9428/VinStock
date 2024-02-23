@@ -318,7 +318,7 @@ app.get("/products", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  res.render("login.ejs");
+  res.render("login.ejs", {error: ""});
 });
 
 app.get("/register", (req, res) => {
