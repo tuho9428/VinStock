@@ -1,0 +1,25 @@
+/* Style for the Company Overview heading */
+h1 {
+    text-align: center;
+    color: #333;
+  }
+  
+  /* Style for the Company Overview container */
+  #companyOverview {
+    max-width: 600px;
+    margin: 0 auto; /* Center the container */
+    padding: 20px;
+    background-color: #f2f2f2;
+    border-radius: 5px;
+  }
+  
+  /* Style for individual property paragraphs */
+  #companyOverview p {
+    margin-bottom: 10px;
+  }
+  
+  /* Style for property labels (strong tags) */
+  #companyOverview strong {
+    font-weight: bold;
+    color: #007bff; /* Blue */
+  }
