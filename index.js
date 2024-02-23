@@ -421,7 +421,7 @@ app.post("/register", async (req, res) => {
     ]);
 
     if (checkResult.rows.length > 0) {
-      req.redirect("/login");
+      res.render('register', { error: `${newUser.email} is already exists` });
     } else {
       bcrypt.hash(newUser.password, saltRounds, async (err, hash) => {
         if (err) {
@@ -438,14 +438,14 @@ app.post("/register", async (req, res) => {
               // Other user properties
             };
             console.log("success");
-            res.redirect("/secrets");
+            res.redirect("/login");
           });
         }
       });
     }
   } catch (err) {
     console.log(err);
-    res.render('register.ejs', { error: `${newUser.email} is already exists` });
+    //res.render('register.ejs', { error: `${newUser.email} is already exists` });
   }
   
 });
@@ -535,7 +535,7 @@ passport.use(
             "INSERT INTO users (email, password) VALUES ($1, $2)",
             [profile.email, "google"]
           );
-          req.user = { id: newUser.rows[0].id, /* Other user properties */ }; // Set the user ID in the request object
+          //req.user = { id: newUser.rows[0].id, /* Other user properties */ }; // Set the user ID in the request object
           return cb(null, newUser.rows[0]);
         } else {
           return cb(null, result.rows[0]);
