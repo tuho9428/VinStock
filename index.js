@@ -401,7 +401,7 @@ app.post("/login", (req, res, next) => {
           });
         } else {
           // If both admin and local authentication fail, display error message
-          return res.render('register', { error: "Incorrect username or password"});
+          return res.render('login', { error: "Incorrect username or password"});
         }
       })(req, res, next);
     }
