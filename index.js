@@ -292,11 +292,21 @@ app.post("/admin/delete-symbol", async (req, res) => {
 
 app.get("/admin/symbols", async (req, res) => {
   try {
-    const symbolList = await symbolManager.getSymbolList();
+    const symbolList = await symbolManager.getSymbolListAdmin();
     res.render("symbols.ejs", { symbolList });
   } catch (error) {
     console.error('Error fetching symbol list:', error);
     res.render('error.ejs', { message: 'Error fetching symbol list' });
+  }
+});
+
+app.get("/admin/users", async (req, res) => {
+  try {
+    const userList = await symbolManager.getUserList();
+    res.render("users.ejs", { userList });
+  } catch (error) {
+    console.error('Error fetching users list:', error);
+    res.render('error.ejs', { message: 'Error fetching users list' });
   }
 });
 
