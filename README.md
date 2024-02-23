@@ -2,4 +2,4 @@ Members:
 Jake Tran
 Tu Ho
 Thang Le
-hello
+CS480 Advangted Software Engineering
