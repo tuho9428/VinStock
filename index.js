@@ -326,6 +326,11 @@ app.post("/register", async (req, res) => {
   
   const newUser = new User(email,password);
 
+  if (password.length < 6) {
+    // Render the register.ejs template with an error message
+    return res.render('register', { error: 'Password must be at least 6 characters long' });
+  }
+
   try {
     const checkResult = await db.query("SELECT * FROM users WHERE email = $1", [
       newUser.email,
