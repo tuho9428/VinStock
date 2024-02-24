@@ -452,7 +452,7 @@ app.post("/register", async (req, res) => {
     ]);
 
     if (checkResult.rows.length > 0) {
-      res.render('register', { error: `${newUser.email} is already exists` });
+      res.render('register', { error: `${newUser.email} already exists` });
     } else {
       bcrypt.hash(newUser.password, saltRounds, async (err, hash) => {
         if (err) {
@@ -469,17 +469,17 @@ app.post("/register", async (req, res) => {
               // Other user properties
             };
             console.log("success");
-            res.redirect("/login");
+            res.render('success.ejs', { message: 'Registration successful! \n Now you can experience our product' }); // Passing message variable
           });
         }
       });
     }
   } catch (err) {
     console.log(err);
-    //res.render('register.ejs', { error: `${newUser.email} is already exists` });
+    //res.render('register.ejs', { error: `${newUser.email} already exists` });
   }
-  
 });
+
 
 // Define the 'admin' authentication strategy
 passport.use(
