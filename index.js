@@ -315,6 +315,18 @@ app.get("/contact", (req, res) => {
   res.render("contact.ejs");
 });
 
+app.post('/submit-form', (req, res) => {
+  const { name, email, message } = req.body;
+
+  db.query('INSERT INTO contacts (name, email, message) VALUES ($1, $2, $3)', [name, email, message], (error, results) => {
+    if (error) {
+      res.send('Error saving data');
+    } else {
+      res.send('Data saved successfully');
+    }
+  });
+});
+
 app.get("/about", (req, res) => {
   res.render("about.ejs");
 });
