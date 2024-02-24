@@ -29,3 +29,11 @@ CREATE TABLE favorite_stocks (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT unique_user_symbol UNIQUE (user_id, symbol)
 );
+
+CREATE TABLE contacts (
+      id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    submission_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
