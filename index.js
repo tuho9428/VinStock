@@ -567,9 +567,9 @@ passport.use(
             [profile.email, "google"]
           );
           //req.user = { id: newUser.rows[0].id, /* Other user properties */ }; // Set the user ID in the request object
-          return cb(null, newUser.rows[0]);
+          return cb(null, newUser.rows[0],);
         } else {
-          return cb(null, result.rows[0]);
+          return cb(null, result.rows[0],);
         }
       } catch (err) {
         return cb(err);

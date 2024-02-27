@@ -72,55 +72,69 @@
         </nav>
       </div></header>
 
-<body>
-  <h1>Income Statement for <%= content.symbol %></h1>
-
-  <h2>Annual Reports</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Fiscal Date Ending</th>
-        <th>Reported Currency</th>
-        <th>Gross Profit</th>
-        <th>Total Revenue</th>
-        <!-- Add more headings based on your data structure -->
-      </tr>
-    </thead>
-    <tbody>
-      <% content.annualReports.forEach((report) => { %>
-        <tr>
-          <td><%= report.fiscalDateEnding %></td>
-          <td><%= report.reportedCurrency %></td>
-          <td><%= report.grossProfit %></td>
-          <td><%= report.totalRevenue %></td>
-          <!-- Add more cells based on your data structure -->
-        </tr>
-      <% }); %>
-    </tbody>
-  </table>
-
-  <h2>Quarterly Reports</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Fiscal Date Ending</th>
-        <th>Reported Currency</th>
-        <th>Gross Profit</th>
-        <th>Total Revenue</th>
-        <!-- Add more headings based on your data structure -->
-      </tr>
-    </thead>
-    <tbody>
-      <% content.quarterlyReports.forEach((report) => { %>
-        <tr>
-          <td><%= report.fiscalDateEnding %></td>
-          <td><%= report.reportedCurrency %></td>
-          <td><%= report.grossProfit %></td>
-          <td><%= report.totalRevenue %></td>
-          <!-- Add more cells based on your data structure -->
-        </tr>
-      <% }); %>
-    </tbody>
+      <body>
+        <header class="u-black u-clearfix u-header u-header" id="sec-35cf">
+          <!-- Your header content -->
+        </header>
+      
+        <h1>Income Statement for <%= content.symbol %></h1>
+      
+        <% if (content.annualReports && content.annualReports.length > 0) { %>
+          <h2>Annual Reports</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Fiscal Date Ending</th>
+                <th>Reported Currency</th>
+                <th>Gross Profit</th>
+                <th>Total Revenue</th>
+                <!-- Add more headings based on your data structure -->
+              </tr>
+            </thead>
+            <tbody>
+              <% content.annualReports.forEach((report) => { %>
+                <tr>
+                  <td><%= report.fiscalDateEnding %></td>
+                  <td><%= report.reportedCurrency %></td>
+                  <td><%= report.grossProfit %></td>
+                  <td><%= report.totalRevenue %></td>
+                  <!-- Add more cells based on your data structure -->
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <p>The company doesn't have annual income statement data.</p>
+        <% } %>
+      
+        <% if (content.quarterlyReports && content.quarterlyReports.length > 0) { %>
+          <h2>Quarterly Reports</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Fiscal Date Ending</th>
+                <th>Reported Currency</th>
+                <th>Gross Profit</th>
+                <th>Total Revenue</th>
+                <!-- Add more headings based on your data structure -->
+              </tr>
+            </thead>
+            <tbody>
+              <% content.quarterlyReports.forEach((report) => { %>
+                <tr>
+                  <td><%= report.fiscalDateEnding %></td>
+                  <td><%= report.reportedCurrency %></td>
+                  <td><%= report.grossProfit %></td>
+                  <td><%= report.totalRevenue %></td>
+                  <!-- Add more cells based on your data structure -->
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <p>The company doesn't have quarterly income statement data.</p>
+        <% } %>
+      
   </table>
 
   <footer class="u-align-center u-clearfix u-footer u-grey-80 u-footer" id="sec-6f38"><div class="u-clearfix u-sheet u-sheet-1">
