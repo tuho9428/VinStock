@@ -410,10 +410,12 @@ app.get(
   "/auth/google/secrets",
   passport.authenticate("google", {
     successRedirect: "/secrets",
-    failureRedirect: "/login",
+    failureRedirect: "/successGoogle",
   })
 );
-
+app.get("/successGoogle", (req, res) => {
+  res.render("successGoogle.ejs", {error: ""});
+});
 app.post("/login", (req, res, next) => {
   passport.authenticate("admin", (err, user, info) => {
     if (user) {
