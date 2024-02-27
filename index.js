@@ -320,13 +320,21 @@ app.post('/submit-form', (req, res) => {
 
   db.query('INSERT INTO contacts (name, email, message) VALUES ($1, $2, $3)', [name, email, message], (error, results) => {
     if (error) {
-      res.send('Error saving data');
+      res.render('error', { message: 'Error saving data' }); // Assuming you have an 'error' view/template
     } else {
-      res.send('Data saved successfully');
+      res.render('successContact', { message: 'Data saved successfully' }); // Assuming you have a 'success' view/template
     }
   });
 });
 
+
+/**
+ * 
+ */
+
+// Assuming you're using fetch API for making the request
+
+//
 app.get("/about", (req, res) => {
   res.render("about.ejs");
 });
@@ -469,7 +477,7 @@ app.post("/register", async (req, res) => {
               // Other user properties
             };
             console.log("success");
-            res.render('success.ejs', { message: 'Registration successful! \n Now you can experience our product' }); // Passing message variable
+            res.render('successRegister.ejs', { message: 'Registration successful! \n Now you can experience our product' }); // Passing message variable
           });
         }
       });
