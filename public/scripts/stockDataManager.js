@@ -107,6 +107,18 @@ class StockDataManager {
     }
   }
 
+  async checkSymbolExists(symbol) {
+    try {
+      const query = "SELECT COUNT(*) FROM stock_data WHERE symbol = $1";
+      const result = await this.db.query(query, [symbol]);
+      const count = parseInt(result.rows[0].count);
+      return count > 0;
+    } catch (error) {
+      console.error('Error checking symbol existence:', error);
+      return false; // Return false if an error occurs
+    }
+  }
+
 }
 
   export default StockDataManager;

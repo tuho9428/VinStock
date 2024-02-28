@@ -56,7 +56,6 @@ dataProcessor.processCSVFile();
 // Accessing the countries array data
 const countries = dataProcessor.getData();
 
-
 app.get("/", async (req, res) => {
   if (req.isAuthenticated()) {
     const userId = req.user.id; // Get the user ID from the request object
@@ -294,14 +293,21 @@ app.post("/admin/delete-symbol", async (req, res) => {
   }
 
   try {
-    await symbolManager.removeSymbol(symbol);
-    
-    res.redirect("/secrets");
+    // Check if the symbol exists in the database
+    const symbolExists = await symbolManager.checkSymbolExists(symbol);
+
+    if (symbolExists) {
+      await symbolManager.removeSymbol(symbol);
+      res.render("deleted.ejs");
+    } else {
+      res.render('error.ejs', { message: 'Symbol not found in the database' });
+    }
   } catch (error) {
     console.error('Error removing symbol:', error);
     res.render('error.ejs', { message: 'Error removing symbol' });
   }
 });
+
 
 app.get("/admin/symbols", async (req, res) => {
   try {
