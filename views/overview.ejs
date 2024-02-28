@@ -73,6 +73,17 @@
 
 <h1>Information of <%= symbol %></h1>
 
+  <!--More Details button-->
+  <form class="button-container"  action="/result" method="GET">
+    <input type="hidden" name="symbol" value="<%= symbol %>">
+    <button type="submit">View <%= symbol %> More Details</button>
+  </form>
+
+<!--Back button-->
+<form id="addForm" method="GET" action='/' class="button-container">
+  <button type="submit" name="back" >Back</button>
+</form>
+
 <div id="companyOverview">
   <p><strong>Company Name:</strong> <%= content.companyName %></p>
   <p><strong>Exchange:</strong> <%= content.exchange %></p>

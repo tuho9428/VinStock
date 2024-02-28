@@ -78,6 +78,17 @@
         </header>
       
         <h1>Income Statement for <%= content.symbol %></h1>
+
+          <!--More Details button-->
+        <form class="button-container"  action="/result" method="GET">
+          <input type="hidden" name="symbol" value="<%= symbol %>">
+          <button type="submit">View <%= symbol %> More Details</button>
+        </form>
+
+        <!--Back button-->
+        <form id="addForm" method="GET" action='/' class="button-container">
+          <button type="submit" name="back" >Back</button>
+        </form>
       
         <% if (content.annualReports && content.annualReports.length > 0) { %>
           <h2>Annual Reports</h2>

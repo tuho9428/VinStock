@@ -278,7 +278,7 @@ app.post("/admin/add-symbol", async (req, res) => {
   try {
     await symbolManager.addSymbol(symbol);
     
-    res.redirect("/secrets");
+    res.render("successAdd.ejs");
   } catch (error) {
     console.error('Error adding symbol:', error);
     res.render('error.ejs', { message: 'Error adding symbol' });

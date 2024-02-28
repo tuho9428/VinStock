@@ -82,10 +82,11 @@
     <button type="submit" name="refresh" value="<%=symbol%>">Refresh</button>
   </form>
 
+  <!--More Details button-->
   <form class="button-container"  action="/result" method="GET">
     <input type="hidden" name="symbol" value="<%= symbol %>">
     <button type="submit">View <%= symbol %> More Details</button>
-</form>
+  </form>
 
   <div class="response-area">
     <% if (content && content.symbol) { %>
