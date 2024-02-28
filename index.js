@@ -387,9 +387,10 @@ app.get("/secrets", async (req, res) => {
   if (req.isAuthenticated()) {
     const userId = req.user.id; // Get the user ID from the request object
     // Use the userId for further operations
+    const userRole = req.user.role;
     try {
       const symbolLists = await symbolList.getSymbolList();
-      res.render('secrets.ejs', { symbolLists });
+      res.render('secrets.ejs', { symbolLists: symbolLists, userRole: userRole});
     } catch (error) {
       console.error('Error fetching stock list:', error);
       res.render('error.ejs', { message: 'Error fetching stock list' });
