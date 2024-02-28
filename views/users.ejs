@@ -1,0 +1,15 @@
+<%- include("partials/header.ejs") %>
+
+<h1>Welcome Admin!</h1>
+
+<h2>Manage Stock Symbols</h2>
+
+<h1>User List</h1>
+  
+  <ul>
+    <% userList.forEach(user => { %>
+      <li><%= user %></li>
+    <% }); %>
+  </ul>
+
+<%- include("partials/footer.ejs") %>

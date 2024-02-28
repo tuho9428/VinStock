@@ -1,0 +1,8 @@
+.home-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 4 columns */
+  gap: 10px; /* Gap between buttons */
+  justify-content: center;
+  align-items: stretch;
+  margin-bottom: 20px;
+}
