@@ -1,0 +1,23 @@
+<%- include("partials/header.ejs") %>
+
+<h1>Welcome Admin!</h1>
+
+<h2>Manage Stock Symbols</h2>
+
+<h1>Contact Messages</h1>
+    <ul>
+        <% contactMessages.forEach(contact => { %>
+            <li>
+                <strong>Name:</strong> <%= contact.name %><br>
+                <strong>Email:</strong> <%= contact.email %><br>
+                <strong>Message:</strong> <%= contact.message %><br>
+                <strong>Submission Date:</strong> <%= contact.submission_date %><br>
+            </li>
+        <% }); %>
+    </ul>
+  <!--Back button-->
+<form id="addForm" method="GET" action='/admin' class="button-container">
+  <button type="submit" name="back" >Back</button>
+</form>
+
+<%- include("partials/footer.ejs") %>

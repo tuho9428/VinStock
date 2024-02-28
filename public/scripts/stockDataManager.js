@@ -107,6 +107,16 @@ class StockDataManager {
     }
   }
 
+  async getContactMessages() {
+    try {
+      const query = "SELECT * FROM contacts";
+      const result = await this.db.query(query);
+      return result.rows;
+    } catch (error) {
+      throw new Error("Error fetching contact messages from the database");
+    }
+}
+
   async checkSymbolExists(symbol) {
     try {
       const query = "SELECT COUNT(*) FROM stock_data WHERE symbol = $1";
