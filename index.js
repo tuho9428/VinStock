@@ -309,6 +309,7 @@ app.post("/admin/delete-symbol", async (req, res) => {
 });
 
 
+
 app.get("/admin/symbols", async (req, res) => {
   try {
     const symbolList = await symbolManager.getSymbolListAdmin();
@@ -328,6 +329,19 @@ app.get("/admin/users", async (req, res) => {
     res.render('error.ejs', { message: 'Error fetching users list' });
   }
 });
+
+//admin see contact list
+app.get("/admin/contacts", async (req, res) => {
+  try {
+    const contactMessages = await symbolManager.getContactMessages(); // Fetch contact messages
+    res.render("contactMessage.ejs", { contactMessages }); // Pass contactMessages to the template
+  } catch (error) {
+    console.error('Error fetching contact messages:', error);
+    res.render('error.ejs', { message: 'Error fetching contact messages' });
+  }
+});
+
+
 
 
 app.get("/contact", (req, res) => {
