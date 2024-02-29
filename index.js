@@ -128,14 +128,15 @@ app.get("/sestate", (req, res) => {
 
 // "/statement" routes using DataManager
 app.get("/statement", async (req, res) => {
+  const userEmail = req.user.email;
   const pickedSymbol = req.query.symbol;
 
   try {
     const content = await dataManager.fetchFinancialData(pickedSymbol, 'INCOME_STATEMENT');
-    res.render('statement.ejs', content);
+    res.render('statement.ejs', {content: content.content, symbol: content.symbol, timeSerie: content.timeSerie, userEmail: userEmail});
   } catch (error) {
     console.error('Error in /statement route:', error);
-    res.render('statement.ejs', { content: 'Error!', symbol: pickedSymbol });
+    res.render('statement.ejs', { content: 'Error!', symbol: pickedSymbol, userEmail: userEmail });
   }
 });
 
@@ -147,14 +148,15 @@ app.get("/seover", (req, res) => {
 
 //"/overview" routes using DataManager
 app.get("/overview", async (req, res) => {
+  const userEmail = req.user.email;
   const pickedSymbol = req.query.symbol;
 
   try {
     const content = await dataManager.fetchFinancialData(pickedSymbol, 'OVERVIEW');
-    res.render('overview.ejs', content);
+    res.render('overview.ejs', {content: content.content, symbol: content.symbol, timeSerie: content.timeSerie, userEmail: userEmail});
   } catch (error) {
     console.error('Error in /overview route:', error);
-    res.render('overview.ejs', { content: 'Error!', symbol: pickedSymbol });
+    res.render('overview.ejs', { content: 'Error!', symbol: pickedSymbol, userEmail: userEmail });
   }
 });
 
