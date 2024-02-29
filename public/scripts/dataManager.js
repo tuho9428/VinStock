@@ -47,6 +47,11 @@ class DataManager {
       exchange: data.Exchange,
       symbol: data.Symbol,
       description: data.Description,
+      country: data.Country,
+      currency: data.Currency,
+      sector: data.Sector,
+      industry: data.Industry,
+      address: data.Address,
       // Add more properties based on the actual structure of the data
     };
 
