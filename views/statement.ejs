@@ -242,61 +242,76 @@
     </form>
 
     <% if (content.annualReports && content.annualReports.length > 0) { %>
-    <h2>Annual Reports</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Fiscal Date Ending</th>
-          <th>Reported Currency</th>
-          <th>Gross Profit</th>
-          <th>Total Revenue</th>
-          <!-- Add more headings based on your data structure -->
-        </tr>
-      </thead>
-      <tbody>
-        <% content.annualReports.forEach((report) => { %>
-        <tr>
-          <td><%= report.fiscalDateEnding %></td>
-          <td><%= report.reportedCurrency %></td>
-          <td><%= Math.abs(report.grossProfit) >= 1e9 ? (report.grossProfit / 1e9).toFixed(2) + 'B' : Math.abs(report.grossProfit) >= 1e6 ? (report.grossProfit / 1e6).toFixed(2) + 'M' : report.grossProfit %></td>
-          <td><%= Math.abs(report.totalRevenue) >= 1e9 ? (report.totalRevenue / 1e9).toFixed(2) + 'B' : Math.abs(report.totalRevenue) >= 1e6 ? (report.totalRevenue / 1e6).toFixed(2) + 'M' : report.totalRevenue %></td>
-
-          <!-- Add more cells based on your data structure -->
-        </tr>
-        <% }); %>
-      </tbody>
-    </table>
-    <% } else { %>
-    <p>The company doesn't have annual income statement data.</p>
-    <% } %> <% if (content.quarterlyReports && content.quarterlyReports.length >
-    0) { %>
-    <h2>Quarterly Reports</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Fiscal Date Ending</th>
-          <th>Reported Currency</th>
-          <th>Gross Profit</th>
-          <th>Total Revenue</th>
-          <!-- Add more headings based on your data structure -->
-        </tr>
-      </thead>
-      <tbody>
-        <% content.quarterlyReports.forEach((report) => { %>
-        <tr>
-          <td><%= report.fiscalDateEnding %></td>
-          <td><%= report.reportedCurrency %></td>
-          <td><%= Math.abs(report.grossProfit) >= 1e9 ? (report.grossProfit / 1e9).toFixed(2) + 'B' : Math.abs(report.grossProfit) >= 1e6 ? (report.grossProfit / 1e6).toFixed(2) + 'M' : report.grossProfit %></td>
-<td><%= Math.abs(report.totalRevenue) >= 1e9 ? (report.totalRevenue / 1e9).toFixed(2) + 'B' : Math.abs(report.totalRevenue) >= 1e6 ? (report.totalRevenue / 1e6).toFixed(2) + 'M' : report.totalRevenue %></td>
-
-          <!-- Add more cells based on your data structure -->
-        </tr>
-        <% }); %>
-      </tbody>
-    </table>
-    <% } else { %>
-    <p>The company doesn't have quarterly income statement data.</p>
-    <% } %>
+      <h2>Annual Reports</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Fiscal Date Ending</th>
+            <th>Reported Currency</th>
+            <th>Gross Profit</th>
+            <th>Total Revenue</th>
+            <!-- Add more headings based on your data structure -->
+          </tr>
+        </thead>
+        <tbody>
+          <% content.annualReports.forEach((report) => { %>
+          <tr>
+            <td><%= report.fiscalDateEnding %></td>
+            <td><%= report.reportedCurrency %></td>
+            <td><%= formatAmount(report.grossProfit) %></td>
+            <td><%= formatAmount(report.totalRevenue) %></td>
+  
+            <!-- Add more cells based on your data structure -->
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+      <% } else { %>
+      <p>The company doesn't have annual income statement data.</p>
+      <% } %> <% if (content.quarterlyReports && content.quarterlyReports.length >
+      0) { %>
+      <h2>Quarterly Reports</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Fiscal Date Ending</th>
+            <th>Reported Currency</th>
+            <th>Gross Profit</th>
+            <th>Total Revenue</th>
+            <!-- Add more headings based on your data structure -->
+          </tr>
+        </thead>
+        <tbody>
+          <% content.quarterlyReports.forEach((report) => { %>
+          <tr>
+            <td><%= report.fiscalDateEnding %></td>
+            <td><%= report.reportedCurrency %></td>
+            <td><%= formatAmount(report.grossProfit) %></td>
+            <td><%= formatAmount(report.totalRevenue) %></td>
+  
+  
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+      <% } else { %>
+      <p>The company doesn't have quarterly income statement data.</p>
+      <% } %>
+  
+      <%
+function formatAmount(amount) {
+    if (Math.abs(amount) >= 1e9) {
+        return (amount / 1e9).toFixed(2) + ' B';
+    } else if (Math.abs(amount) >= 1e6) {
+        return (amount / 1e6).toFixed(2) + ' M';
+    } else if (Math.abs(amount) >= 1e3) {
+        return (amount / 1e3).toFixed(2) + ' K';
+    } else {
+        return amount.toString();
+    }
+}
+%>
+  
 
     <footer
       class="u-align-center u-clearfix u-footer u-grey-80 u-footer"
