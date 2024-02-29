@@ -1,3 +1,28 @@
+.stock-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.stock-list-item {
+  margin-bottom: 10px; /* Adjust as needed */
+}
+
+.symbol {
+  display: inline-block;
+  margin-right: 10px; /* Adjust as needed to add space between symbol and button */
+}
+
+.stock-form {
+  display: inline-block;
+  vertical-align: middle; /* Align button vertically with the symbol */
+}
+
+.stock-form button {
+  display: block;
+  margin-top: 5px; /* Adjust as needed to add space between button and next line */
+}
+ 
+    
     /* Style for the heading */
     h1 {
         text-align: center;
@@ -64,3 +89,5 @@ a {
   a:hover {
     text-decoration: underline;
   }
+
+  
