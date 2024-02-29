@@ -208,18 +208,19 @@ app.post('/refresh', async (req, res) => {
 
 app.get('/show', async (req, res) => {
   const pickedSymbol = req.query.symbol;
+  const userEmail = req.user.email;
 
   try {
     const stockData = await stockDataManager.getStockData(pickedSymbol);
 
     if (stockData) {
-      res.render('show.ejs', { content: stockData, symbol: pickedSymbol });
+      res.render('show.ejs', { content: stockData, symbol: pickedSymbol, userEmail: userEmail });
     } else {
-      res.render('show.ejs', { content: null, symbol: pickedSymbol });
+      res.render('show.ejs', { content: null, symbol: pickedSymbol, userEmail: userEmail });
     }
   } catch (error) {
     console.error('Error in /show route:', error);
-    res.render('show.ejs', { content: 'Error!', symbol: pickedSymbol });
+    res.render('show.ejs', { content: 'Error!', symbol: pickedSymbol, userEmail: userEmail });
   }
 });
 
@@ -229,24 +230,29 @@ const stockPricesManager = new DataManager(API_URL, process.env.RAPIDAPI_KEY);
 // get result from search
 app.get('/result', async (req, res) => {
   try {
+    const userEmail = req.user.email;
     const pickedSymbol = req.query.symbol;
     const content = await stockPricesManager.fetchStockPrices(pickedSymbol, 'TIME_SERIES_DAILY');
     
-    res.render('pickedStock.ejs', { content: content.content, symbol: pickedSymbol, timeSerie: content.timeSerie }); // Include timeSerie in the content object
+    res.render('pickedStock.ejs', { content: content.content, symbol: pickedSymbol, timeSerie: content.timeSerie, userEmail: userEmail }); // Include timeSerie in the content object
   } catch (error) {
     console.error('Error in /result route:', error);
-    res.render('pickedStock.ejs', { content: 'Error!', symbol: pickedSymbol });
+    res.render('pickedStock.ejs', { content: 'Error!', symbol: pickedSymbol, userEmail: userEmail});
   }
 });
 
 app.post('/result', async (req, res) => {
   try {
+    let userEmail = ''; // Define userEmail at the beginning
+    if (req.user) {
+      userEmail = req.user.email; // Update userEmail if req.user exists
+    }
     let content;
     const symbol = req.query.symbol || req.body.symbol;
 
     if (req.body.companyOverview) {
       content = await dataManager.fetchFinancialData(symbol, 'OVERVIEW');
-      res.render('overview.ejs', content);
+      res.render('overview.ejs', {content: content.content, symbol: content.symbol, timeSerie: content.timeSerie, userEmail: userEmail});
     } else if (req.body.dailyPrice) {
       content = await stockPricesManager.fetchStockPrices(symbol, 'TIME_SERIES_DAILY');
     } else if (req.body.intradayPrice) {
@@ -257,15 +263,15 @@ app.post('/result', async (req, res) => {
       content = await stockPricesManager.fetchStockPrices(symbol, 'TIME_SERIES_MONTHLY');
     } else if (req.body.incomeStatement) {
       content = await dataManager.fetchFinancialData(symbol, 'INCOME_STATEMENT');
-      res.render('statement.ejs', content);
+      res.render('statement.ejs', {content: content.content, symbol: content.symbol, timeSerie: content.timeSerie, userEmail: userEmail});
     }
 
     if (!req.body.companyOverview && !req.body.incomeStatement) {
-      res.render('pickedStock.ejs', content); // Include timeSerie in the content object
+      res.render('pickedStock.ejs', {content: content.content, symbol: content.symbol, timeSerie: content.timeSerie, userEmail: userEmail}); // Include timeSerie in the content object
     }
   } catch (error) {
     console.error('Error in /result POST route:', error);
-    res.render('pickedStock.ejs', { content: 'Error!', symbol: pickedSymbol });
+    res.render('pickedStock.ejs', { content: 'Error!', symbol: content.symbol, userEmail: userEmail});
   }
 });
 
