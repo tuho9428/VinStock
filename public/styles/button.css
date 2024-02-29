@@ -6,3 +6,13 @@
   align-items: stretch;
   margin-bottom: 20px;
 }
+
+.form-inline {
+  display: flex;
+  align-items: center;
+}
+
+.form-inline input,
+.form-inline button {
+  margin-right: 5px; /* Adjust the margin as needed */
+}

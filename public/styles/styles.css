@@ -7,21 +7,6 @@
   margin-bottom: 20px;
 }
 
-button {
-  padding: 6px 4px;
-  background-color: #333; /* Blue */
-  color: #fff;
-  border: 1px solid #2980b9; /* Darker Blue */
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #2980b9; /* Darker Blue on hover */
-}
-
 /* Additional styling for the Company Overview and Income Statement buttons */
 button[name="companyOverview"],
 button[name="incomeStatement"] {
@@ -32,6 +17,21 @@ button[name="incomeStatement"] {
 button[name="companyOverview"]:hover,
 button[name="incomeStatement"]:hover {
   background-color: #2980b9; /* Darker Green on hover */
+}
+
+button {
+  padding: 6px 30px;
+  color: black;
+  border: 1px solid black; /* Darker Blue */
+  border-radius: 20%;
+  
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #2980b9; /* Darker Blue on hover */
 }
 
 .centered-container {
@@ -50,14 +50,24 @@ button[name="incomeStatement"]:hover {
   /* Add any additional styling for the chart if needed */
 }
 
+h2, p {
+  color: white !important;
+}
+
 .centered-container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
+  background-color:#292d33;
+  padding-bottom: 150px;
+  padding-top: 120px;
+  column-gap: 20px;
 }
 
 .container-inner {
   text-align: center;
+  color: black;
 }
 
 * {
