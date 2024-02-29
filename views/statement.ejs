@@ -237,7 +237,7 @@
     </form>
 
     <!--Back button-->
-    <form id="addForm" method="GET" action="/" class="button-container">
+    <form id="addForm" method="GET" action="/sestate" class="button-container">
       <button type="submit" name="back">Back</button>
     </form>
 
@@ -258,8 +258,9 @@
         <tr>
           <td><%= report.fiscalDateEnding %></td>
           <td><%= report.reportedCurrency %></td>
-          <td><%= report.grossProfit %></td>
-          <td><%= report.totalRevenue %></td>
+          <td><%= Math.abs(report.grossProfit) >= 1e9 ? (report.grossProfit / 1e9).toFixed(2) + 'B' : Math.abs(report.grossProfit) >= 1e6 ? (report.grossProfit / 1e6).toFixed(2) + 'M' : report.grossProfit %></td>
+          <td><%= Math.abs(report.totalRevenue) >= 1e9 ? (report.totalRevenue / 1e9).toFixed(2) + 'B' : Math.abs(report.totalRevenue) >= 1e6 ? (report.totalRevenue / 1e6).toFixed(2) + 'M' : report.totalRevenue %></td>
+
           <!-- Add more cells based on your data structure -->
         </tr>
         <% }); %>
@@ -285,8 +286,9 @@
         <tr>
           <td><%= report.fiscalDateEnding %></td>
           <td><%= report.reportedCurrency %></td>
-          <td><%= report.grossProfit %></td>
-          <td><%= report.totalRevenue %></td>
+          <td><%= Math.abs(report.grossProfit) >= 1e9 ? (report.grossProfit / 1e9).toFixed(2) + 'B' : Math.abs(report.grossProfit) >= 1e6 ? (report.grossProfit / 1e6).toFixed(2) + 'M' : report.grossProfit %></td>
+<td><%= Math.abs(report.totalRevenue) >= 1e9 ? (report.totalRevenue / 1e9).toFixed(2) + 'B' : Math.abs(report.totalRevenue) >= 1e6 ? (report.totalRevenue / 1e6).toFixed(2) + 'M' : report.totalRevenue %></td>
+
           <!-- Add more cells based on your data structure -->
         </tr>
         <% }); %>
