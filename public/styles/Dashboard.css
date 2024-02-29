@@ -1122,5 +1122,27 @@ button {
 }
 
 button:hover {
-  background-color: #555; /* Darker color on hover */
+  background-color: #555;
+}
+
+.dynamic_list {
+  background-color: black;
+  padding: 20px; 
+  color: white;
+}
+
+h1 {
+  font-size: 24px; 
+  
+}
+
+.home-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; 
+}
+
+.dynamic_buttons {
+  background-color: black;
+  padding: 10px; 
 }
