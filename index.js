@@ -116,12 +116,14 @@ const dataManager = new DataManager(API_URL, process.env.RAPIDAPI_KEY);
 
 // search symbol or company name
 app.get("/search", (req, res) => {
-  res.render('search', { countries: JSON.stringify(searchManager.getSymbolAndNames()) });
+  const userEmail = req.user.email;
+  res.render('search', { countries: JSON.stringify(searchManager.getSymbolAndNames()) , userEmail: userEmail });
 });
 
 // search statement
 app.get("/sestate", (req, res) => {
-  res.render('state', { countries: JSON.stringify(searchManager.getSymbolAndNames()) });
+  const userEmail = req.user.email;
+  res.render('state', { countries: JSON.stringify(searchManager.getSymbolAndNames()), userEmail: userEmail });
 });
 
 // "/statement" routes using DataManager
@@ -139,7 +141,8 @@ app.get("/statement", async (req, res) => {
 
 // search company overview
 app.get("/seover", (req, res) => {
-  res.render('over', { countries: JSON.stringify(searchManager.getSymbolAndNames()) });
+  const userEmail = req.user.email;
+  res.render('over', { countries: JSON.stringify(searchManager.getSymbolAndNames()),userEmail: userEmail });
 });
 
 //"/overview" routes using DataManager
