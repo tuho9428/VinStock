@@ -1126,7 +1126,7 @@ button:hover {
 }
 
 .dynamic_list {
-  background-color: black;
+  background-color: #292d33;
   padding: 20px; 
   color: white;
 }
@@ -1143,6 +1143,6 @@ h1 {
 }
 
 .dynamic_buttons {
-  background-color: black;
+  background-color: #292d33;
   padding: 10px; 
 }
