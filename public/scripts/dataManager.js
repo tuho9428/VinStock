@@ -89,6 +89,10 @@ class DataManager {
       const stockSymbol = symbol;
       const timeSerie = timeSeriesFunction.substring('TIME_SERIES_'.length);
 
+      let latestDayTimestamp = null;
+      // Get the first timestamp in the timeSeries
+      const firstTimestamp = Object.keys(timeSeries)[0];
+
       for (const timestamp in timeSeries) {
         if (timeSeries.hasOwnProperty(timestamp)) {
           const entry = timeSeries[timestamp];
@@ -103,8 +107,10 @@ class DataManager {
           prices.push(price);
         }
       }
-      
-      return { content: prices, symbol: stockSymbol, timeSerie: timeSerie };
+
+      latestDayTimestamp = firstTimestamp;
+
+      return { content: prices, symbol: stockSymbol, timeSerie: timeSerie, latestDayTimestamp: latestDayTimestamp };
     } catch (error) {
       console.error('Error in fetchStockPrices:', error);
       throw new Error('Failed to fetch stock prices.');

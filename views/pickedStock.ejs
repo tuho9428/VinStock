@@ -234,6 +234,7 @@
           <label for="timeSerie">Time Serie:</label>
           <div id="timeSerie"><%= timeSerie %></div>
         </div>
+        <p>Last update of stock symbol <%= symbol %> was <%= latestDayTimestamp %>.</p>
       </div>
     </div>
 
@@ -313,6 +314,7 @@
     <form id="addForm" method="GET" action="/" class="button-container">
       <button type="submit" name="back">Back</button>
     </form>
+    
 
     <div class="response-area">
       <% if (Array.isArray(content) && content.length > 0) { %>
@@ -346,6 +348,12 @@
             candlestick: {
               fallingColor: { strokeWidth: 1, fill:'#a52714', stroke: '#a52714', hollowIsRising: true }, // red candles
               risingColor: { strokeWidth: 1, fill:'#0f9d58', stroke: '#0f9d58' }, // green candles
+            },
+            hAxis: {
+              title: 'Date'
+            },
+            vAxis: {
+              title: 'US Dollar ($)'
             }
           };
 
@@ -353,6 +361,7 @@
           chart.draw(data, options);
         }
       </script>
+      
 
       <% } else { %> <% if (content && content === "Error!") { %>
       <p>Error fetching stock price data for <%= symbol %>.</p>
