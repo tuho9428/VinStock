@@ -61,9 +61,11 @@ app.get("/", async (req, res) => {
     const userId = req.user.id; // Get the user ID from the request object
     // Use the userId for further operations
     const userRole = req.user.role;
+    const userEmail = req.user.email;
+    userEmail
     try {
       const symbolLists = await symbolList.getSymbolList();
-      res.render('secrets.ejs', { symbolLists: symbolLists, userRole: userRole});
+      res.render('secrets.ejs', { symbolLists: symbolLists, userRole: userRole, userEmail: userEmail});
     } catch (error) {
       console.error('Error fetching stock list:', error);
       res.render('error.ejs', { message: 'Error fetching stock list' });
@@ -94,9 +96,11 @@ app.post('/add', async (req, res) => {
 app.get('/stocklist', async (req, res) => {
   const userId = req.user.id; // Assuming user ID is available in the request object
   const userRole = req.user.role;
+  const userEmail = req.user.email;
+  userEmail
   try {
     const stocks = await stockManager.getStockList(userId);
-    res.render('stocklist.ejs', { stocks: stocks , role: userRole });
+    res.render('stocklist.ejs', { stocks: stocks , role: userRole, userEmail: userEmail });
   } catch (error) {
     console.error('Error fetching stock list:', error);
     res.render('error.ejs', { message: 'Error fetching stock list' });
@@ -421,9 +425,10 @@ app.get("/secrets", async (req, res) => {
     const userId = req.user.id; // Get the user ID from the request object
     // Use the userId for further operations
     const userRole = req.user.role;
+    const userEmail = req.user.email;
     try {
       const symbolLists = await symbolList.getSymbolList();
-      res.render('secrets.ejs', { symbolLists: symbolLists, userRole: userRole});
+      res.render('secrets.ejs', { symbolLists: symbolLists, userRole: userRole, userEmail: userEmail });
     } catch (error) {
       console.error('Error fetching stock list:', error);
       res.render('error.ejs', { message: 'Error fetching stock list' });
@@ -511,6 +516,7 @@ app.post("/register", async (req, res) => {
             req.user = {
               id: user.id, // Set the user ID in the request object
               // Other user properties
+              email: user.email,
             };
             console.log("success");
             res.render('successRegister.ejs', { message: 'Registration successful! \n Now you can experience our product' }); // Passing message variable
@@ -543,7 +549,7 @@ passport.use(
           } else {
             if (valid) {
               console.log('admin');
-              return cb(null, { id: user.id, role: 'admin', /* Other user properties */ });
+              return cb(null, { id: user.id, role: 'admin', email: user.email/* Other user properties */ });
             } else {
               return cb(null, false);
             }
@@ -575,7 +581,7 @@ passport.use(
           } else {
             if (valid) {
               // return cb(null, user);
-              return cb(null, { id: user.id,  role: 'local'/* Other user properties */ });
+              return cb(null, { id: user.id,  role: 'local', email: user.email /* Other user properties */ });
             } else {
               return cb(null, false);
             }
