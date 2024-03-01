@@ -231,15 +231,18 @@ const stockPricesManager = new DataManager(API_URL, process.env.RAPIDAPI_KEY);
 
 // get result from search
 app.get('/result', async (req, res) => {
+  let userEmail = ''; // Define userEmail at the beginning
+  if (req.user) {
+    userEmail = req.user.email; // Update userEmail if req.user exists
+  }
   try {
-    const userEmail = req.user.email;
     const pickedSymbol = req.query.symbol;
     const content = await stockPricesManager.fetchStockPrices(pickedSymbol, 'TIME_SERIES_DAILY');
     
-    res.render('pickedStock.ejs', { content: content.content, symbol: pickedSymbol, timeSerie: content.timeSerie, userEmail: userEmail }); // Include timeSerie in the content object
+    res.render('pickedStock.ejs', { content: content.content, symbol: pickedSymbol, timeSerie: content.timeSerie, latestDayTimestamp: content.latestDayTimestamp , userEmail: userEmail }); // Include timeSerie in the content object
   } catch (error) {
     console.error('Error in /result route:', error);
-    res.render('pickedStock.ejs', { content: 'Error!', symbol: pickedSymbol, userEmail: userEmail});
+    res.render('pickedStock.ejs', { content: 'Error!', symbol: pickedSymbol, userEmail: userEmail, latestDayTimestamp: content.latestDayTimestamp});
   }
 });
 
@@ -269,11 +272,11 @@ app.post('/result', async (req, res) => {
     }
 
     if (!req.body.companyOverview && !req.body.incomeStatement) {
-      res.render('pickedStock.ejs', {content: content.content, symbol: content.symbol, timeSerie: content.timeSerie, userEmail: userEmail}); // Include timeSerie in the content object
+      res.render('pickedStock.ejs', {content: content.content, symbol: content.symbol, timeSerie: content.timeSerie, userEmail: userEmail, latestDayTimestamp: content.latestDayTimestamp}); // Include timeSerie in the content object
     }
   } catch (error) {
     console.error('Error in /result POST route:', error);
-    res.render('pickedStock.ejs', { content: 'Error!', symbol: content.symbol, userEmail: userEmail});
+    res.render('pickedStock.ejs', { content: 'Error!', symbol: content.symbol, userEmail: userEmail, latestDayTimestamp: content.latestDayTimestamp});
   }
 });
 

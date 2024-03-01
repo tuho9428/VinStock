@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="/styles/layout.css">
     <link rel="stylesheet" href="/styles/content.css">
     <link rel="stylesheet" href="/styles/styles.css">
+    <link rel="stylesheet" href="/styles/success.css" media="screen">
+
     <script class="u-script" type="text/javascript" src="/scripts/jquery.js" defer=""></script>
     <script class="u-script" type="text/javascript" src="/scripts/vinpage.js" defer=""></script>
     <meta name="referrer" content="origin">
@@ -64,25 +66,36 @@
         </nav>
       </div></header>
 
-<img
-  class="profile"
-  src="images/logo222.png"
-  style="background-color: black"
-  alt="cat profile"
-/>
-
-    
-<h1>Result Page</h1>
-    
-<% if (message) { %>
-    <p><%= message %></p>
-<% } else { %>
-    <p>Symbol successfully added to favorite stocks!</p>
-    <p>User ID: <%= userId %></p>
-    <p>Favorite Symbol: <%= symbol %></p>
-<% } %>
-
-<a href="/search">Add Another Symbol</a> or <a href="/stocklist">View for List</a>
+      <section class="u-align-left u-clearfix u-image u-section-1" id="carousel_eb9f" src="" data-image-width="1200" data-image-height="677">
+        <div class="u-clearfix u-sheet u-sheet-1">
+          <h1 class="u-align-right u-custom-font u-text u-title u-text-1" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-direction="X"> Result Page</h1>
+          <p class="u-align-right u-text u-text-2">
+            <% if (message) { %>
+            <p><%= message %></p>
+            <% } else { %>
+            <p>Symbol successfully added to favorite stocks!</p>
+            <p>User ID: <%= userId %></p>
+            <p>Favorite Symbol: <%= symbol %></p>
+            <% } %>
+          </p>
+          <div class="custom-expanded data-layout-selected u-clearfix u-layout-custom-sm u-layout-custom-xs u-layout-wrap u-layout-wrap-1">
+            <div class="u-layout">
+              <div class="u-layout-row">
+                <div class="u-container-align-right u-container-style u-layout-cell u-size-30-lg u-size-30-md u-size-30-sm u-size-30-xl u-size-60-xs u-layout-cell-1" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="500">
+                  <div class="u-container-layout u-valign-middle u-container-layout-1">
+                  <a href="/search" class="u-align-right u-border-2 u-border-active-white u-border-hover-white u-border-no-left u-border-no-right u-border-no-top u-border-white u-bottom-left-radius-0 u-bottom-right-radius-0 u-btn u-button-style u-none u-radius-0 u-text-active-white u-text-hover-white u-top-left-radius-0 u-top-right-radius-0 u-btn-1" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="500" data-animation-direction="">Add More</a>
+                </div>
+              </div>
+              <div class="u-container-align-right u-container-style u-layout-cell u-size-30-lg u-size-30-md u-size-30-sm u-size-30-xl u-size-60-xs u-layout-cell-2" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="500">
+                <div class="u-container-layout u-valign-middle u-container-layout-2">
+                  <a href="/stocklist" class="u-active-white u-align-right u-btn u-btn-round u-button-style u-hover-white u-palette-1-base u-radius-15 u-text-active-palette-1-base u-text-hover-palette-1-base u-btn-2" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="500" data-animation-direction="">View List</a>
+                </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
 <footer class="u-align-center u-clearfix u-footer u-grey-80 u-footer" id="sec-6f38"><div class="u-clearfix u-sheet u-sheet-1">
   <p class="u-small-text u-text u-text-variant u-text-1">Copyright</p>
