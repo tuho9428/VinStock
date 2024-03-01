@@ -534,7 +534,7 @@ app.post("/register", async (req, res) => {
               email: user.email,
             };
             console.log("success");
-            res.render('successRegister.ejs', { message: 'Registration successful! \n Now you can experience our product' }); // Passing message variable
+            res.render('successRegister.ejs', {userEmail: user.email,  message: 'Registration successful! \n Now you can experience our product' }); // Passing message variable
           });
         }
       });

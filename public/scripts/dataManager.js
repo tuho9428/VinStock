@@ -1,5 +1,6 @@
 import axios from 'axios';
 import StockPrices from './stockPrices.js';
+import CompanyOverview from './companyOverview.js';
 
 // DataManager class to handle data fetching and processing
 class DataManager {
@@ -42,18 +43,20 @@ class DataManager {
   }
 
   formatCompanyOverview(data, symbol) {
-    const companyOverview = {
-      companyName: data.Name,
-      exchange: data.Exchange,
-      symbol: data.Symbol,
-      description: data.Description,
-      country: data.Country,
-      currency: data.Currency,
-      sector: data.Sector,
-      industry: data.Industry,
-      address: data.Address,
-      // Add more properties based on the actual structure of the data
+    const companyData = {
+      Name: data.Name,
+      Exchange: data.Exchange,
+      Symbol: data.Symbol,
+      Description: data.Description,
+      Country: data.Country,
+      Currency: data.Currency,
+      Sector: data.Sector,
+      Industry: data.Industry,
+      Address: data.Address
     };
+    
+    // Create an instance of CompanyOverview
+    const companyOverview = new CompanyOverview(companyData);
 
     return { content: companyOverview, symbol: symbol, timeSerie: "Company Overview" };
   }
