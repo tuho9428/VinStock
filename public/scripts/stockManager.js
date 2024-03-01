@@ -27,7 +27,7 @@ class StockManager {
 
     async getStockList(userId) {
       try {
-        const query = 'SELECT * FROM favorite_stocks WHERE user_id = $1'; // Adjust this query based on your actual database schema
+        const query = 'SELECT * FROM favorite_stocks WHERE user_id = $1';
         const { rows } = await this.db.query(query, [userId]);
         return rows;
       } catch (error) {
@@ -38,7 +38,7 @@ class StockManager {
 
     async getSymbolList() {
       try {
-        const query = 'SELECT symbol FROM stock_data'; // Adjust this query based on your actual database schema
+        const query = 'SELECT symbol FROM stock_data';
         const { rows } = await this.db.query(query);
         return rows;
       } catch (error) {
