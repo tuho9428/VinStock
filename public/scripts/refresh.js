@@ -1,7 +1,7 @@
 import StockData from './stockData.js';
 
-// StockDataManager class for managing stock data
-class StockDataManager {
+// refresh class for managing stock data
+class refresh {
   constructor(db) {
     this.db = db;
   }
@@ -131,4 +131,4 @@ class StockDataManager {
 
 }
 
-  export default StockDataManager;
+  export default refresh;

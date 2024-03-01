@@ -13,7 +13,7 @@ import StockManager from './public/scripts/stockManager.js';
 import SearchManager from './public/scripts/searchManager.js';
 import DataManager from './public/scripts/dataManager.js';
 import StockData from './public/scripts/stockData.js';
-import StockDataManager from './public/scripts/stockDataManager.js';
+import refresh from './public/scripts/refresh.js';
 import DataProcessor from './public/scripts/dataProcessor.js';
 import { User, Admin } from './public/scripts/person.js';
 
@@ -161,7 +161,7 @@ app.get("/overview", async (req, res) => {
 });
 
 // Implementing Object-Oriented Programming for managing stock data
-const stockDataManager = new StockDataManager(db);
+const stockDataManager = new refresh(db);
 
 // show list stock and refresh
 app.post('/refresh', async (req, res) => {
@@ -284,7 +284,7 @@ app.get("/admin/add-symbol", (req, res) => {
   res.render("admin.ejs");
 });
 
-const symbolManager = new StockDataManager(db);
+const symbolManager = new refresh(db);
 
 app.post("/admin/add-symbol", async (req, res) => {
   const symbol = req.body.symbol;
