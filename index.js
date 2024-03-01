@@ -9,13 +9,13 @@ import session from "express-session";
 import methodOverride from "method-override";
 import axios from "axios";
 import dotenv from 'dotenv';
-import StockManager from './public/scripts/stockManager.js'; // Importing StockManager class from stockManager.js
+import StockManager from './public/scripts/stockManager.js';
 import SearchManager from './public/scripts/searchManager.js';
 import DataManager from './public/scripts/dataManager.js';
 import StockData from './public/scripts/stockData.js';
 import StockDataManager from './public/scripts/stockDataManager.js';
 import DataProcessor from './public/scripts/dataProcessor.js';
-import User from './public/scripts/user.js';
+import { User, Admin } from './public/scripts/person.js';
 
 
 const app = express();
@@ -499,10 +499,11 @@ app.post("/login", (req, res, next) => {
 
 
 app.post("/register", async (req, res) => {
+  const name = req.body.username;
   const email = req.body.username;
   const password = req.body.password;
   
-  const newUser = new User(email,password);
+  const newUser = new User(name, email, password);
 
   if (password.length < 6) {
     // Render the register.ejs template with an error message
