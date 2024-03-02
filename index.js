@@ -12,7 +12,7 @@ import dotenv from 'dotenv';
 import StockManager from './public/scripts/stockManager.js';
 import SearchManager from './public/scripts/searchManager.js';
 import DataManager from './public/scripts/dataManager.js';
-import StockData from './public/scripts/stockData.js';
+import stock from './public/scripts/stock.js';
 import refresh from './public/scripts/refresh.js';
 import DataProcessor from './public/scripts/dataProcessor.js';
 import { User, Admin } from './public/scripts/person.js';
@@ -186,7 +186,7 @@ app.post('/refresh', async (req, res) => {
     const data = response.data;
     const globalQuoteData = data['Global Quote'];
 
-    const stockData = new StockData(
+    const stockData = new stock(
       globalQuoteData['01. symbol'],
       parseFloat(globalQuoteData['02. open']),
       parseFloat(globalQuoteData['03. high']),

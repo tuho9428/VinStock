@@ -1,5 +1,5 @@
 // StockData class representing stock data
-class StockData {
+class Stock {
   constructor(symbol, open_price, high_price, low_price, current_price, volume, last_trading_day, previous_close, change_amount, change_percent) {
     this.symbol = symbol;
     this.open_price = open_price;
@@ -14,4 +14,4 @@ class StockData {
   }
 }
 
-  export default StockData;
+  export default Stock;

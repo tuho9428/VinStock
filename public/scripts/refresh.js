@@ -1,4 +1,4 @@
-import StockData from './stockData.js';
+import stock from './stock.js';
 
 // refresh class for managing stock data
 class refresh {
@@ -6,10 +6,10 @@ class refresh {
     this.db = db;
   }
 
-  async updateStockData(stockData) {
+  async updateStockData(stock) {
     try {
       const queryCheck = `SELECT * FROM stock_data WHERE symbol = $1`;
-      const checkResult = await this.db.query(queryCheck, [stockData.symbol]);
+      const checkResult = await this.db.query(queryCheck, [stock.symbol]);
 
       if (checkResult.rows.length > 0) {
         const updateQuery = `UPDATE stock_data 
@@ -17,31 +17,31 @@ class refresh {
                                  last_trading_day = $7, previous_close = $8, change_amount = $9, change_percent = $10
                              WHERE symbol = $1`;
         await this.db.query(updateQuery, [
-          stockData.symbol,
-          stockData.open_price,
-          stockData.high_price,
-          stockData.low_price,
-          stockData.current_price,
-          stockData.volume,
-          stockData.last_trading_day,
-          stockData.previous_close,
-          stockData.change_amount,
-          stockData.change_percent
+          stock.symbol,
+          stock.open_price,
+          stock.high_price,
+          stock.low_price,
+          stock.current_price,
+          stock.volume,
+          stock.last_trading_day,
+          stock.previous_close,
+          stock.change_amount,
+          stock.change_percent
         ]);
       } else {
         const insertQuery = `INSERT INTO stock_data (symbol, open_price, high_price, low_price, current_price, volume, last_trading_day, previous_close, change_amount, change_percent) 
                              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`;
         await this.db.query(insertQuery, [
-          stockData.symbol,
-          stockData.open_price,
-          stockData.high_price,
-          stockData.low_price,
-          stockData.current_price,
-          stockData.volume,
-          stockData.last_trading_day,
-          stockData.previous_close,
-          stockData.change_amount,
-          stockData.change_percent
+          stock.symbol,
+          stock.open_price,
+          stock.high_price,
+          stock.low_price,
+          stock.current_price,
+          stock.volume,
+          stock.last_trading_day,
+          stock.previous_close,
+          stock.change_amount,
+          stock.change_percent
         ]);
       }
     } catch (error) {
@@ -57,7 +57,7 @@ class refresh {
 
       if (rows.length > 0) {
         const data = rows[0];
-        return new StockData(data.symbol, data.open_price, data.high_price, data.low_price, data.current_price,
+        return new stock(data.symbol, data.open_price, data.high_price, data.low_price, data.current_price,
           data.volume, data.last_trading_day, data.previous_close, data.change_amount, data.change_percent);
       } else {
         return null;
