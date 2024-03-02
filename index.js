@@ -51,7 +51,7 @@ const db = new pg.Client({
 
 db.connect();
 
-const dataProcessor = new DataProcessor('./public/scripts/stocks_name_latest.csv');
+const dataProcessor = new DataProcessor('./stocks_name_latest.csv');
 dataProcessor.processCSVFile();
 // Accessing the countries array data
 const countries = dataProcessor.getData();
@@ -280,10 +280,6 @@ app.post('/result', async (req, res) => {
   }
 });
 
-app.get("/admin/add-symbol", (req, res) => {
-  res.render("admin.ejs");
-});
-
 const symbolManager = new refresh(db);
 
 app.post("/admin/add-symbol", async (req, res) => {
@@ -412,8 +408,9 @@ app.get("/service", (req, res) => {
 
 // Ensure only users with the admin role can access the '/admin' route and render the admin.ejs page
 app.get("/admin", (req, res) => {
+  const userEmail = req.user.email;
   if (req.isAuthenticated() && req.user.role === 'admin') {
-    res.render("admin.ejs");
+    res.render("admin.ejs",{ userEmail: userEmail});
   } else {
     res.redirect("/login");
   }
