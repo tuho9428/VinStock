@@ -2,8 +2,8 @@ import axios from 'axios';
 import StockPrices from './stockPrices.js';
 import CompanyOverview from './companyOverview.js';
 
-// DataManager class to handle data fetching and processing
-class DataManager {
+// apiManager class to handle data fetching and processing
+class apiManager {
   constructor(apiUrl, rapidapiKey) {
     this.apiUrl = apiUrl;
     this.rapidapiKey = rapidapiKey;
@@ -67,7 +67,7 @@ class DataManager {
   }
 
 
-  // DataManager for managing stock data
+  // apiManager for managing stock data
   async fetchStockPrices(symbol, timeSeriesFunction) {
     try {
       const config = {
@@ -127,4 +127,4 @@ class DataManager {
 
 }
 
-  export default DataManager;
+  export default apiManager;

@@ -11,7 +11,7 @@ import axios from "axios";
 import dotenv from 'dotenv';
 import StockManager from './public/scripts/stockManager.js';
 import SearchManager from './public/scripts/searchManager.js';
-import DataManager from './public/scripts/dataManager.js';
+import apiManager from './public/scripts/apiManager.js';
 import stock from './public/scripts/stock.js';
 import refresh from './public/scripts/refresh.js';
 import DataProcessor from './public/scripts/dataProcessor.js';
@@ -111,8 +111,8 @@ app.get('/stocklist', async (req, res) => {
 // Instantiate SearchManager with countries data
 const searchManager = new SearchManager(countries);
 
-// Instantiate DataManager with API URL and RapidAPI Key
-const dataManager = new DataManager(API_URL, process.env.RAPIDAPI_KEY);
+// Instantiate apiManager with API URL and RapidAPI Key
+const apiFetch = new apiManager(API_URL, process.env.RAPIDAPI_KEY);
 
 // search symbol or company name
 app.get("/search", (req, res) => {
@@ -126,13 +126,13 @@ app.get("/sestate", (req, res) => {
   res.render('state', { countries: JSON.stringify(searchManager.getSymbolAndNames()), userEmail: userEmail });
 });
 
-// "/statement" routes using DataManager
+// "/statement" routes using apiManager
 app.get("/statement", async (req, res) => {
   const userEmail = req.user.email;
   const pickedSymbol = req.query.symbol;
 
   try {
-    const content = await dataManager.fetchFinancialData(pickedSymbol, 'INCOME_STATEMENT');
+    const content = await apiFetch.fetchFinancialData(pickedSymbol, 'INCOME_STATEMENT');
     res.render('statement.ejs', {content: content.content, symbol: content.symbol, timeSerie: content.timeSerie, userEmail: userEmail});
   } catch (error) {
     console.error('Error in /statement route:', error);
@@ -146,13 +146,13 @@ app.get("/seover", (req, res) => {
   res.render('over', { countries: JSON.stringify(searchManager.getSymbolAndNames()),userEmail: userEmail });
 });
 
-//"/overview" routes using DataManager
+//"/overview" routes using apiManager
 app.get("/overview", async (req, res) => {
   const userEmail = req.user.email;
   const pickedSymbol = req.query.symbol;
 
   try {
-    const content = await dataManager.fetchFinancialData(pickedSymbol, 'OVERVIEW');
+    const content = await apiFetch.fetchFinancialData(pickedSymbol, 'OVERVIEW');
     res.render('overview.ejs', {content: content.content, symbol: content.symbol, timeSerie: content.timeSerie, userEmail: userEmail});
   } catch (error) {
     console.error('Error in /overview route:', error);
@@ -227,7 +227,7 @@ app.get('/show', async (req, res) => {
 });
 
 // Implementing Object-Oriented Programming for managing stock data and fetching prices
-const stockPricesManager = new DataManager(API_URL, process.env.RAPIDAPI_KEY);
+const stockPricesManager = new apiManager(API_URL, process.env.RAPIDAPI_KEY);
 
 // get result from search
 app.get('/result', async (req, res) => {
@@ -256,7 +256,7 @@ app.post('/result', async (req, res) => {
     const symbol = req.query.symbol || req.body.symbol;
 
     if (req.body.companyOverview) {
-      content = await dataManager.fetchFinancialData(symbol, 'OVERVIEW');
+      content = await apiFetch.fetchFinancialData(symbol, 'OVERVIEW');
       res.render('overview.ejs', {content: content.content, symbol: content.symbol, timeSerie: content.timeSerie, userEmail: userEmail});
     } else if (req.body.dailyPrice) {
       content = await stockPricesManager.fetchStockPrices(symbol, 'TIME_SERIES_DAILY');
@@ -267,7 +267,7 @@ app.post('/result', async (req, res) => {
     } else if (req.body.monthlyPrice) {
       content = await stockPricesManager.fetchStockPrices(symbol, 'TIME_SERIES_MONTHLY');
     } else if (req.body.incomeStatement) {
-      content = await dataManager.fetchFinancialData(symbol, 'INCOME_STATEMENT');
+      content = await apiFetch.fetchFinancialData(symbol, 'INCOME_STATEMENT');
       res.render('statement.ejs', {content: content.content, symbol: content.symbol, timeSerie: content.timeSerie, userEmail: userEmail});
     }
 
