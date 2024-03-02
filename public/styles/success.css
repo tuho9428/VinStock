@@ -1,8 +1,9 @@
+/*
 .u-section-1 {
     background-image: url("/images/success.jpg");
     background-position: 50% 50%;
   }
-  
+*/
   .u-section-1 .u-sheet-1 {
     min-height: 732px;
   }
@@ -18,6 +19,7 @@
     --animation-custom_in-scale: 1;
     font-style: italic;
     margin: 108px 767px 0 -397px;
+    text-align: center;
   }
   
   .u-section-1 .u-layout-wrap-1 {
