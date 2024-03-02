@@ -1,5 +1,5 @@
 import axios from 'axios';
-import StockPrices from './stockPrices.js';
+import graphicStockPrices from './graphicStockPrices.js';
 import CompanyOverview from './companyOverview.js';
 
 // apiManager class to handle data fetching and processing
@@ -104,7 +104,7 @@ class apiManager {
       for (const timestamp in timeSeries) {
         if (timeSeries.hasOwnProperty(timestamp)) {
           const entry = timeSeries[timestamp];
-          const price = new StockPrices(
+          const price = new graphicStockPrices(
             timestamp,
             entry['1. open'],
             entry['2. high'],

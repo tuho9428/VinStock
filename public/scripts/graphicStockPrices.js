@@ -1,5 +1,5 @@
-// StockPrices class representing stock prices
-class StockPrices {
+// graphicStockPrices class representing stock prices
+class graphicStockPrices {
   constructor(timestamp, openPrice, highPrice, lowPrice, closePrice, volume) {
     this.timestamp = timestamp;
     this.openPrice = openPrice;
@@ -10,4 +10,4 @@ class StockPrices {
   }
 }
 
-  export default StockPrices;
+  export default graphicStockPrices;
