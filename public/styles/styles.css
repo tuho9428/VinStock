@@ -9,13 +9,21 @@
 
 /* Additional styling for the Company Overview and Income Statement buttons */
 button[name="companyOverview"],
-button[name="incomeStatement"] {
+button[name="incomeStatement"],
+button[name="monthlyPrice"],
+button[name="weeklyPrice"],
+button[name="intradayPrice"],
+button[name="dailyPrice"] {
   background-color: #333; /* Green */
   border-color: #2980b9; /* Darker Green */
 }
 
 button[name="companyOverview"]:hover,
-button[name="incomeStatement"]:hover {
+button[name="incomeStatement"]:hover,
+button[name="monthlyPrice"]:hover,
+button[name="weeklyPrice"]:hover,
+button[name="intradayPrice"]:hover,
+button[name="dailyPrice"]:hover{
   background-color: #2980b9; /* Darker Green on hover */
 }
 
@@ -262,7 +270,6 @@ h2 {
   border-bottom: none;
   border-top: none;
   z-index: 99;
-  /position the autocomplete items to be the same width as the container:/
   top: 100%;
   left: 0;
   right: 0;
