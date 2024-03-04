@@ -46,6 +46,31 @@
     <meta property="og:description" content="" />
     <meta property="og:type" content="website" />
     <meta data-intl-tel-input-cdn-path="intlTelInput/" />
+
+    <style>
+      .stock-list-item {
+          width: 200px; /* Adjust as needed */
+          height: 60px; /* Adjust as needed */
+          display: flex;
+          align-items: center;
+          margin-left: 40%;
+      }
+  
+      .symbol {
+          /* You can adjust the styles for the .symbol class as needed */
+          margin-right: 10px; /* Add some space between the symbol and the text */
+      }
+  
+      .stock-form {
+          margin-left: auto; /* Push the form to the right side of the list item */
+      }
+  
+      /* Style for the button */
+      .btn {
+          padding: 10px 20px; /* Adjust as needed */
+      }
+  </style>
+
   </head>
 
   <body
@@ -239,25 +264,27 @@
     <div class="content">
       <h1>Your Favourite Stocks</h1>
 
-      <ul class="stock-list">
-        <% stocks.forEach(stock => { %>
-        <li class="stock-list-item">
-          <span class="symbol"></span> <%= stock.symbol %></span>
-          <form action="/result" method="GET" class="stock-form">
-            <input type="hidden" name="symbol" value="<%= stock.symbol %>" />
-            <button type="submit" class="btn btn-success">View</button>
-          </form>
-        </li>
-        <br>
-        <% }); %>
-      </ul>
+      <div>
+        <ul class="stock-list">
+          <% stocks.forEach(stock => { %>
+          <li class="stock-list-item">
+            <span class="symbol"></span> <%= stock.symbol %></span>
+            <form action="/result" method="GET" class="stock-form">
+              <input type="hidden" name="symbol" value="<%= stock.symbol %>" />
+              <button type="submit" class="btn btn-success">View</button>
+            </form>
+          </li>
+          <br>
+          <% }); %>
+        </ul>
+      </div>
       
   <div class="centered-container">
     <div class="container-inner">   
       <div class="u-container-align-right u-container-style u-layout-cell u-size-30-lg u-size-30-md u-size-30-sm u-size-30-xl u-size-60-xs u-layout-cell-2" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="500">
-        <a href="/stocklist" style="border-radius: 12px; padding: 8px 16px; background-color: #333; color: white; text-align: center; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#2980b9';" onmouseout="this.style.backgroundColor='#333';">User Dashboard</a>
-      </div>
+        <a href="/" style="text-decoration: none; border-radius: 12px; margin-bottom: 16px; padding: 8px 16px; background-color: #333; color: white; text-align: center;">User Dashboard</a>
     </div>
+  </div>
   </div>
 </div>
     <footer
