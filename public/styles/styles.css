@@ -287,3 +287,9 @@ h2 {
   display: block; /* Ensure proper spacing and centering */
   margin: 0 auto; /* Center the image */
 }
+
+button{
+  border: 1px solid black; /* Darker Blue */
+  border-radius: 70%;
+  padding: 6px 30px;
+}
