@@ -239,6 +239,16 @@
       </div>
     </div>
 
+    <form
+      id="addForm"
+      method="POST"
+      action="/add?symbol=<%=symbol%>"
+      class="button-container"
+    >
+      <button type="submit" name="add" value="<%=symbol%>">Add to List</button>
+      <button type="submit" name="back">Back</button>
+    </form>
+
     <!-- Add the div element for the Google Candlestick Chart -->
     <div class="centered-container">
       <div class="container-inner">
@@ -308,19 +318,7 @@
       </button>
     </form>
 
-    <form
-      id="addForm"
-      method="POST"
-      action="/add?symbol=<%=symbol%>"
-      class="button-container"
-    >
-      <button type="submit" name="add" value="<%=symbol%>">Add to List</button>
-    </form>
-
-    <!--Back button-->
-    <form id="addForm" method="GET" action="/" class="button-container">
-      <button type="submit" name="back">Back</button>
-    </form>
+    
     
 
     <div class="response-area">

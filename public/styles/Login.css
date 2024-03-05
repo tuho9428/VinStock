@@ -128,7 +128,7 @@
 
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #f8f9fa; /* Light background color */
+  background-color: black; /* Light background color */
 }
 h1{
   size: 10px;
@@ -189,3 +189,7 @@ button:hover {
   background-color: #218838; /* Darker color on hover */
 }
 
+.blackground {
+  width: 340px;
+  background-color: #030b18;
+}
